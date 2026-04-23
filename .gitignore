@@ -1,0 +1,11 @@
+venv/
+venv313/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+generated_images/
+.env
+.claude/*
+!.claude/skills/
+!.claude/issues/
