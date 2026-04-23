@@ -190,7 +190,13 @@ result = client.images.edit(
 - アルファチャネル必須(透明部分が編集対象)
 - プロンプトには**新しい完全な画像全体**を記述する(消した部分だけではない)
 
-注意: GPT Imageのマスキングは完全にプロンプトベースであり、マスクはガイダンスとして使われるため、形状が正確に追従されるとは限らない点を覚えておいてください。
+**重要 — マスクは「真の inpainting」ではない**(OpenAI 公式ガイド原文):
+
+> Masking with GPT Image is entirely prompt-based. The model uses the mask as guidance, but may not follow its exact shape with complete precision.
+
+つまり edits API は **マスクの有無に関わらず常に全画面を再描画** する。マスク外の領域も「常時最大忠実度」のおかげで非常によく保持されるが、ピクセル単位で同一になる保証はない。**ピクセル単位の完全保持が必要なら Pillow 等で対象領域だけクロップ→編集→ペーストバックするハイブリッド方式が唯一の手段**。
+
+実用上は、UI スクリーンショットの一部差し替え程度であれば「`Preserve absolutely everything else exactly as in the reference: <要素を列挙>`」のように保持要素を具体的に書き並べると、デバイスシリアル番号レベルの細部まで再現される(2026-04-23 dogfooding 検証済み、`docs/dogfooding-log.md`)。
 
 ---
 

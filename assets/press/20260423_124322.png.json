@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A premium editorial magazine cover poster, dark-mode aesthetic, refined and sophisticated. Centered large title with the exact text \"ccskill-gptimage\" in elegant modern sans-serif (lowercase, slight italic accent), warm ivory white. Below it the exact subtitle \"Claude Code 用 OpenAI gpt-image-2 スキル\" in smaller refined Japanese serif font, soft gold color #c9a96a. Beneath that the tagline \"AIが計画して描く。日本語も、英語も、思い通りに。\" in subtle Japanese gothic, dim warm gray. Background: deep ink charcoal #0d1015 with very subtle vertical gradient. A single thin horizontal gold rule above the title. A small minimalist terminal cursor mark in the upper right corner. Generous negative space, magazine-quality kerning and leading, no decorative illustrations, no border. Mood: confident, restrained, premium technical publication.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T12:43:22.294581"
+}

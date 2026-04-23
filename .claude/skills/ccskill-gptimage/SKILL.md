@@ -101,6 +101,23 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 > The transparent area of the mask is what gets replaced. The prompt must describe the **complete final image**, not just the masked region.
 
+#### Editing only a small region (e.g. anonymizing a screenshot)
+
+The OpenAI guide is explicit: *"Masking with GPT Image is entirely prompt-based. The model uses the mask as guidance, but may not follow its exact shape with complete precision."* In practice **the edits API always regenerates the full canvas** — even with a mask, every pixel is re-rendered. Pick the right strategy:
+
+| Goal | Recommended approach |
+|---|---|
+| Replace one region, accept that the rest is **redrawn at very high fidelity but is no longer pixel-identical** (UI text/serial numbers etc. usually survive thanks to "always max fidelity") | `--reference` + a strong `Preserve absolutely everything else exactly as in the reference: …` prompt that **enumerates the surrounding elements** (sidebar items, headers, dates, button labels, logos, etc.). This is often more than good enough for blogs / docs |
+| **Pixel-perfect** preservation outside the edited region (e.g. legal evidence, regulated screenshots) | **Hybrid: crop → edit → paste back** with Pillow / ImageMagick. gpt-image-2 only edits the cropped tile; the rest of the original is untouched at the bit level |
+| Composite multiple references | `--reference a.png --reference b.png …` (no mask) and write a goal-oriented prompt |
+
+For approach 1, two prompt patterns work well:
+
+- **Enumerate what to preserve**: list every visible element by name and quoted text — `"the dialog header '所在地を表示', the date 'これは…の最後の位置情報です。', the '閉じる' button, the central green location dot, ..."`. The more you name, the stronger the preservation.
+- **Replace only X**: `"Replace ONLY the map area with [fictional content]. Do not change any layout, font, color, or text outside the map rectangle."`
+
+Real-world example (anonymizing the map inside an Apple Business "lost mode location" screenshot): a single `--reference --quality high` call replaced the map (street pattern, river, route number, real POI labels) with a fictional neighborhood while preserving the surrounding UI down to device serial numbers. Output resolution was 1536×1024 (down from 2000×1305) — small UI text was redrawn but readable. See `docs/dogfooding-log.md`.
+
 ## Prompt Design Guide (gpt-image-2 best practices)
 
 > Sources: [OpenAI Image generation guide](https://developers.openai.com/api/docs/guides/image-generation), [gpt-image-2 model page](https://developers.openai.com/api/docs/models/gpt-image-2)

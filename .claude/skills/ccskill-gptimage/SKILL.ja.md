@@ -105,6 +105,23 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 > マスクの透明部分が置換対象。プロンプトには **新しい完全な画像全体** を記述する(消した部分だけではない)。
 
+#### 局所編集(スクリーンショットの一部だけ差し替えたい場合)
+
+OpenAI 公式ガイドに明記:*"Masking with GPT Image is entirely prompt-based. The model uses the mask as guidance, but may not follow its exact shape with complete precision."*。つまり **edits API はマスクの有無に関わらず常に全画面を再描画** する(マスクは "ガイダンス" に過ぎない)。用途に応じて戦略を選ぶ:
+
+| 目的 | 推奨アプローチ |
+|---|---|
+| 一部だけ差し替えればよく、それ以外が **「ピクセル単位で同一」ではないが極めて高い忠実度で再描画される」のは許容**(常時最大忠実度のおかげで UI テキスト・シリアル番号などはほぼ保持される) | `--reference` + 強い `Preserve absolutely everything else exactly as in the reference: …` プロンプト。**保持する要素を列挙** する(サイドバー項目、ヘッダ、日付、ボタンラベル、ロゴ等)。ブログ・ドキュメント用途ならこれで十分なことが多い |
+| 編集領域以外を **ピクセル単位で完全保持** したい(法的証拠、規制対象スクリーンショット等) | **ハイブリッド: クロップ → 編集 → 貼り戻し**。Pillow / ImageMagick で対象領域だけ切り出して gpt-image-2 で同サイズに生成し、元画像にペースト。それ以外は元画像のビット列がそのまま残る |
+| 複数参照画像の合成 | `--reference a.png --reference b.png …`(マスクなし)+ ゴール志向プロンプト |
+
+アプローチ 1 で効くプロンプトパターン:
+
+- **保持要素を列挙する**: 引用符付きで具体テキストを書き並べる — `"the dialog header '所在地を表示', the date 'これは…の最後の位置情報です。', the '閉じる' button, the central green location dot, ..."`。列挙が多いほど保持が強くなる
+- **「X だけ差し替えろ」と書く**: `"Replace ONLY the map area with [架空内容]. Do not change any layout, font, color, or text outside the map rectangle."`
+
+実例: Apple Business「紛失モード位置確認」スクリーンショットの匿名化。`--reference --quality high` 一発で、地図(街路網・河川・国道番号・実在 POI ラベル)を架空の住宅地に差し替えつつ、周辺 UI は **デバイスシリアル番号まで含めて** 再現された。出力解像度は 1536×1024(元 2000×1305 から縮小)で、小さな UI 文字は再描画されたが可読性は維持。詳細: `docs/dogfooding-log.md`
+
 ## プロンプト設計ガイド (gpt-image-2 向けベストプラクティス)
 
 > 一次資料: [OpenAI Image generation guide](https://developers.openai.com/api/docs/guides/image-generation), [gpt-image-2 model page](https://developers.openai.com/api/docs/models/gpt-image-2)
