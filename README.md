@@ -22,22 +22,8 @@ A handful of one-shot examples, all generated at `--quality high` with **no rege
 <table>
 <tr>
   <td align="center" width="33%">
-    <img src="assets/capability-survey/categories/12_comic_4koma_japanese_programmer.png" width="260" alt="Japanese 4-koma manga"><br>
-    <sub><b>4-panel manga in Japanese</b><br>title + 4 speech bubbles + monitor code + stack-trace, all readable</sub>
-  </td>
-  <td align="center" width="33%">
-    <img src="assets/capability-survey/categories/14_japanese_poster_vertical_tategaki.png" width="260" alt="Vertical Japanese poster"><br>
-    <sub><b>Tategaki vertical Japanese poster</b><br>"未来は描かれるものではない、計画されるものだ。"</sub>
-  </td>
-  <td align="center" width="33%">
-    <img src="assets/capability-survey/categories/06_ui_mockup_settings_japanese.png" width="260" alt="iOS Settings UI in Japanese"><br>
-    <sub><b>iOS Settings UI in Japanese</b><br>pixel-perfect rows, SF-Symbol-style colored icons</sub>
-  </td>
-</tr>
-<tr>
-  <td align="center" width="33%">
-    <img src="assets/capability-survey/categories/09_food_photo_tonkotsu_ramen.png" width="260" alt="Tonkotsu ramen photo"><br>
-    <sub><b>Photoreal food shot</b><br>tonkotsu ramen, steam, soft yolk, pickled ginger</sub>
+    <img src="assets/capability-survey/categories/01_photorealistic_portrait_woman.png" width="260" alt="Photoreal portrait"><br>
+    <sub><b>Photoreal portrait</b><br>natural side light, editorial fashion magazine quality</sub>
   </td>
   <td align="center" width="33%">
     <img src="assets/capability-survey/categories/10_architectural_render_modern_house.png" width="260" alt="Modern house render"><br>
@@ -46,6 +32,20 @@ A handful of one-shot examples, all generated at `--quality high` with **no rege
   <td align="center" width="33%">
     <a href="docs/gallery.md"><img src="assets/capability-survey/categories/03_watercolor_mountain_landscape.png" width="260" alt="See the full gallery"></a><br>
     <sub><b><a href="docs/gallery.md">→ Full gallery (24 examples)</a></b><br>plus the 3×3 cost-vs-quality grid</sub>
+  </td>
+</tr>
+<tr>
+  <td align="center" width="33%">
+    <img src="assets/capability-survey/categories/04_isometric_3d_reading_room.png" width="260" alt="Isometric 3D reading room"><br>
+    <sub><b>Isometric 3D illustration</b><br>cozy reading nook, every prop and color as specified</sub>
+  </td>
+  <td align="center" width="33%">
+    <img src="assets/capability-survey/categories/14_japanese_poster_vertical_tategaki.png" width="260" alt="Vertical Japanese poster"><br>
+    <sub><b>Tategaki vertical Japanese poster</b><br>"未来は描かれるものではない、計画されるものだ。"</sub>
+  </td>
+  <td align="center" width="33%">
+    <img src="assets/capability-survey/categories/06_ui_mockup_settings_japanese.png" width="260" alt="iOS Settings UI in Japanese"><br>
+    <sub><b>iOS Settings UI in Japanese</b><br>pixel-perfect rows, SF-Symbol-style colored icons</sub>
   </td>
 </tr>
 </table>
