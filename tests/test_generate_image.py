@@ -22,6 +22,7 @@ from generate_image import (
     OUTPUT_FORMAT_TO_EXT,
     generate_image,
     get_output_path,
+    main,
     parse_args,
 )
 
@@ -403,3 +404,56 @@ class TestDefaults:
 
     def test_default_moderation(self):
         assert DEFAULT_MODERATION == "auto"
+
+
+class TestMainValidation:
+    def _run_main(self, argv: list[str]) -> int | None:
+        with patch.object(sys, "argv", ["generate_image.py", *argv]):
+            try:
+                main()
+            except SystemExit as e:
+                return e.code
+        return None
+
+    def test_transparent_with_gpt_image_2_exits(self, capsys):
+        code = self._run_main(["p", "--background", "transparent"])
+        assert code == 2
+        out = capsys.readouterr().out
+        assert "transparent" in out
+        assert "gpt-image-1.5" in out
+
+    def test_transparent_with_unknown_model_exits(self, capsys):
+        code = self._run_main(["p", "--background", "transparent", "--model", "dall-e-3"])
+        assert code == 2
+        assert "transparent" in capsys.readouterr().out
+
+    @patch("generate_image.generate_image")
+    def test_transparent_with_gpt_image_1_5_passes_through(self, mock_gen):
+        mock_gen.return_value = "/tmp/fake.png"
+        code = self._run_main([
+            "p",
+            "--background", "transparent",
+            "--model", "gpt-image-1.5",
+        ])
+        assert code is None
+        mock_gen.assert_called_once()
+        assert mock_gen.call_args.kwargs["background"] == "transparent"
+        assert mock_gen.call_args.kwargs["model"] == "gpt-image-1.5"
+
+    @patch("generate_image.generate_image")
+    def test_transparent_with_gpt_image_1_passes_through(self, mock_gen):
+        mock_gen.return_value = "/tmp/fake.png"
+        code = self._run_main([
+            "p",
+            "--background", "transparent",
+            "--model", "gpt-image-1",
+        ])
+        assert code is None
+        mock_gen.assert_called_once()
+
+    def test_input_fidelity_with_gpt_image_2_is_dropped(self, capsys):
+        with patch("generate_image.generate_image") as mock_gen:
+            mock_gen.return_value = "/tmp/fake.png"
+            self._run_main(["p", "--reference", "ref.png", "--input-fidelity", "high"])
+            assert mock_gen.call_args.kwargs["input_fidelity"] is None
+        assert "[Info]" in capsys.readouterr().out

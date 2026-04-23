@@ -289,10 +289,10 @@ def main():
     if args.mask and not args.reference:
         print("[Error] --mask は --reference と併用してください")
         sys.exit(1)
-    if args.background == "transparent" and args.model.startswith("gpt-image-2"):
+    if args.background == "transparent" and not args.model.startswith("gpt-image-1"):
         print(
-            "[Error] gpt-image-2 は --background transparent をサポートしていません。"
-            " 選択肢: (1) --model gpt-image-1.5 に切替、"
+            f"[Error] {args.model} は --background transparent をサポートしていません。"
+            " 透過 PNG が必要な場合: (1) --model gpt-image-1.5 に切替、"
             " (2) 生成後に rembg 等で背景除去、"
             " (3) ccskill-nanobanana を使用"
         )
