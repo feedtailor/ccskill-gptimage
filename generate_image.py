@@ -138,15 +138,26 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=DEFAULT_MODEL,
         help=f"モデル ID (デフォルト: {DEFAULT_MODEL})",
     )
+    parser.add_argument(
+        "--output-name",
+        dest="output_name",
+        type=str,
+        default=None,
+        help="出力ファイル名(拡張子は output_format から決定)。未指定時はタイムスタンプ",
+    )
     return parser.parse_args(argv)
 
 
-def get_output_path(output_dir: str, output_format: str = DEFAULT_OUTPUT_FORMAT) -> Path:
+def get_output_path(
+    output_dir: str,
+    output_format: str = DEFAULT_OUTPUT_FORMAT,
+    name: str | None = None,
+) -> Path:
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     ext = OUTPUT_FORMAT_TO_EXT.get(output_format, ".png")
-    return out / f"{timestamp}{ext}"
+    stem = name if name else datetime.now().strftime("%Y%m%d_%H%M%S")
+    return out / f"{stem}{ext}"
 
 
 def _build_generate_kwargs(
@@ -208,6 +219,7 @@ def generate_image(
     reference_images: list[str] | None = None,
     mask: str | None = None,
     input_fidelity: str | None = None,
+    output_name: str | None = None,
 ) -> str | None:
     """gpt-image-2 で画像を生成し、ファイルパスを返す。失敗時は None。"""
     if reference_images:
@@ -260,7 +272,7 @@ def generate_image(
     if revised:
         print(f"[Revised] {revised}")
 
-    output_path = get_output_path(output_dir, output_format)
+    output_path = get_output_path(output_dir, output_format, name=output_name)
     output_path.write_bytes(base64.b64decode(b64))
     print(f"[Success] 画像を保存しました: {output_path}")
 
@@ -318,6 +330,7 @@ def main():
             reference_images=args.reference if args.reference else None,
             mask=args.mask,
             input_fidelity=args.input_fidelity,
+            output_name=args.output_name,
         )
         if result is None:
             sys.exit(1)

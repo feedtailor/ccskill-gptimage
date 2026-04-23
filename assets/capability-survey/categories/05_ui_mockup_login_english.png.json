@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A modern SaaS login screen mockup. Centered card on a clean off-white background with subtle gradient. Card contains: the exact title \"Welcome back\" in large bold sans-serif at the top, a subtitle \"Sign in to your workspace\" in smaller gray text. Below: an \"Email\" input field, a \"Password\" input field with eye icon, a \"Forgot password?\" link in soft blue, and a primary \"Sign in\" button in deep navy with white text. Below the card: \"Dont have an account? Sign up\" link. Realistic UI design, system font, sharp pixel-perfect rendering, 8px corner radius.",
+  "size": "1024x1536",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:19:38.710541"
+}

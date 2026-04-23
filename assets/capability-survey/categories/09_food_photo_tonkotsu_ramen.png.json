@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A photorealistic overhead shot of a steaming bowl of tonkotsu ramen on a dark wooden table. The ramen has rich creamy white broth, curly noodles, two slices of chashu pork, a soft-boiled egg cut in half showing orange yolk, green scallions, half a sheet of nori, a sprinkle of black sesame, and a small mound of finely chopped white onion. Beside the bowl: chopsticks resting on a small ceramic chopstick rest, a small dish of red pickled ginger. Warm soft natural light from upper left, gentle steam rising. Tabletop has subtle wood grain texture. Food photography aesthetic, shallow depth at bowl edges.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:27:25.542138"
+}

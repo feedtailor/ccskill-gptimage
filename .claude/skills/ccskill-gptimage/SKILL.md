@@ -38,6 +38,7 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py "p
 | `--output-format` | Output format | `png` | `png` / `jpeg` / `webp` |
 | `--output-compression` | Compression (jpeg/webp) | none | 0-100 |
 | `--output` | Output directory | `./generated_images` | any path |
+| `--output-name` | Output filename stem (extension auto from format) | timestamp | any string |
 | `--reference` | Reference image (repeatable) | none | image file path |
 | `--mask` | Mask image (transparent area is editable; requires `--reference`) | none | image file path |
 | `--input-fidelity` | Not needed for gpt-image-2 (always max fidelity). For `gpt-image-1.5` | none | `high` / `low` |

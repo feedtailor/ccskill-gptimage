@@ -97,6 +97,14 @@ class TestParseArgs:
         args = parse_args(["p", "--moderation", "low"])
         assert args.moderation == "low"
 
+    def test_output_name(self):
+        args = parse_args(["p", "--output-name", "hero"])
+        assert args.output_name == "hero"
+
+    def test_output_name_default_none(self):
+        args = parse_args(["p"])
+        assert args.output_name is None
+
 
 class TestGetOutputPath:
     def test_creates_directory_if_not_exists(self):
@@ -132,6 +140,16 @@ class TestGetOutputPath:
             stem = path.stem
             assert len(stem) == 15  # YYYYMMDD_HHMMSS
             assert stem.replace("_", "").isdigit()
+
+    def test_custom_name_overrides_timestamp(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = get_output_path(tmp, output_format="png", name="my_image")
+            assert path.name == "my_image.png"
+
+    def test_custom_name_with_jpeg(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = get_output_path(tmp, output_format="jpeg", name="cover")
+            assert path.name == "cover.jpg"
 
 
 class TestOutputFormatMapping:
@@ -213,6 +231,23 @@ class TestGenerateImageBasic:
         assert kwargs["output_format"] == "jpeg"
         assert kwargs["output_compression"] == 70
         assert result.endswith(".jpg")
+
+    @patch("generate_image.OpenAI")
+    def test_output_name_is_used_for_file(self, mock_openai_cls):
+        client = Mock()
+        mock_openai_cls.return_value = client
+        client.images.generate.return_value = _make_image_response()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            result = generate_image(
+                prompt="x",
+                output_dir=tmp,
+                output_format="png",
+                output_name="my_hero",
+            )
+            assert result is not None
+            assert Path(result).name == "my_hero.png"
+            assert Path(result).exists()
 
     @patch("generate_image.OpenAI")
     def test_moderation_low_is_passed(self, mock_openai_cls):

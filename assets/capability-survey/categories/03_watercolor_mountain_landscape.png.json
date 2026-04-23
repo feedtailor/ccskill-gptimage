@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A delicate watercolor painting of misty mountain ranges at dawn, multiple receding silhouettes in graduated blue-gray tones, a soft pink-orange sky with subtle paper texture visible. A small calm lake in the foreground reflecting the colors. Loose brush strokes, generous wet-on-wet bleeding, classical East Asian landscape composition. No text, no figures.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:19:31.842284"
+}

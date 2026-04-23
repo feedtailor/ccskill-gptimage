@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A clean business infographic for a board deck comparing quarterly revenue. Title at top: the exact text \"FY2026 Quarterly Revenue\" in large bold sans-serif, dark navy. Subtitle below: \"Unit: million yen\". Centered: a vertical bar chart with 4 bars labeled \"Q1\" \"Q2\" \"Q3\" \"Q4\" with values \"12\" \"18\" \"27\" \"35\" displayed above each bar. Bars in graduated teal-to-deep-blue, soft drop shadow. Y-axis shows gridlines at 0, 10, 20, 30, 40. Right side: a small annotation arrow with the text \"+192% YoY\" in coral. Background: very light gray, generous padding, board-deck-quality typography.",
+  "size": "1024x1536",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:26:29.357710"
+}

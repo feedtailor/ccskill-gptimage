@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A photorealistic architectural exterior render of a modern minimalist two-story house at golden hour. Clean concrete and warm wood facade, large floor-to-ceiling windows revealing a softly lit interior, flat roof with subtle overhang, integrated garage on the left. Surrounding landscape: low manicured grass, a single mature olive tree, a thin reflection pool along the front. Warm low sun raking from the right casting long soft shadows. Sky: gradient from peach to pale blue. Foreground: smooth concrete path. Architectural visualization aesthetic, sharp materials, photoreal rendering.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:26:34.656102"
+}

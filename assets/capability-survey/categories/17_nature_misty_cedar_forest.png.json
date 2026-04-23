@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A photoreal misty primeval forest interior at dawn. Tall ancient cedar trunks rising into mist, beams of soft golden god-rays piercing through the canopy. Foreground: lush ferns and moss-covered stones beside a tiny stream. Cool blue-green palette with warm light shafts. Sharp focus throughout, hyper-detailed bark texture, drifting fog. Cinematic landscape photography aesthetic, no figures, no text.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T16:47:57.147572"
+}

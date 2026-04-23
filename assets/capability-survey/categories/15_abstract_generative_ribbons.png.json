@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A generative abstract art piece — flowing organic ribbons of color suspended in a dark space, suggesting liquid mercury caught mid-motion. Color palette: deep midnight indigo background with ribbons in graduated coral, soft peach, lavender, and a single thread of warm gold. Smooth volumetric lighting, subtle depth of field, the ribbons catching specular highlights. Extremely high detail surface micro-texture, dreamlike. No text, no figures, no recognizable objects. Centered composition, balanced weight, gallery-art quality.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:42:31.922529"
+}

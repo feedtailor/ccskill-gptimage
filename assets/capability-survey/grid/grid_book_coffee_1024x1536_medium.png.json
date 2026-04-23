@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A minimalist editorial portrait poster — a Japanese woman reading a book in a sunlit cafe by a window. Soft warm afternoon light, shallow depth of field. At the top, the exact title \"本と珈琲\" in large serif Japanese font, dark charcoal. Below it a small subtitle \"Tokyo, Spring 2026\" in thin English sans-serif. Magazine-quality composition, generous negative space.",
+  "size": "1024x1536",
+  "quality": "medium",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:43:56.161934"
+}

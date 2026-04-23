@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A pure black-ink line drawing illustration in the style of a fashion technical sketch — a young woman in a flowing dress mid-step, viewed from a three-quarter angle. Single weight clean confident lines, no shading, no fill, just elegant outlines on pure white background. Hair flowing, dress hem catching air, hands relaxed. Continuous-line aesthetic feel. No text, no signature, plenty of negative space.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T16:52:56.249178"
+}

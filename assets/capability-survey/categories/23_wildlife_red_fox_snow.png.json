@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A photoreal wildlife shot of a wild red fox in a snowy boreal forest at dawn. The fox stands alert mid-step, looking off-camera to the left, white visible breath in the cold air. Snow on its fur shoulders, vivid orange coat against the white snow and dark spruce trees in soft background bokeh. Ice crystals in foreground catching the low golden light. National Geographic-style wildlife photography, ultra-sharp focus on eyes.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T16:52:51.595018"
+}

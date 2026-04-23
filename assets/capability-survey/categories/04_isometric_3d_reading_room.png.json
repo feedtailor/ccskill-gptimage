@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A clean isometric 3D illustration of a cozy reading nook viewed from above-front. A wooden chair with a cream cushion, a small side table with a cup of coffee and an open book, a tall arched window with soft light, a potted fiddle-leaf fig plant, and a circular wool rug. Warm muted color palette: cream, sage green, soft terracotta. Flat shading with gentle ambient occlusion. White background, centered composition.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:20:21.396136"
+}

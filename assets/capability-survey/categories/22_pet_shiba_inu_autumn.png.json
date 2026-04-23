@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A photoreal close portrait of a Shiba Inu dog sitting in a Japanese autumn park. Soft warm afternoon light, fallen red maple leaves on the ground, gently blurred bokeh of golden trees in the background. The Shibas coat shows fine fur detail in honey-tan and white, alert ears, gentle brown eyes looking slightly off-camera, mouth slightly open in a relaxed smile. Pet portrait photography aesthetic, shallow depth of field, eye-level composition.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T16:52:55.936806"
+}

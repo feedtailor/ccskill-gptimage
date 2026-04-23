@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A cel-shaded anime illustration of a young female warrior with long silver hair tied in a high ponytail, wearing dark navy traditional Japanese armor with subtle gold accents, holding a katana at her side. Confident calm expression, looking forward. Clean ink linework, flat color shading with limited gradients, soft cherry-blossom petals drifting in the foreground. Centered three-quarter portrait, plain misty mountain background.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:20:31.801384"
+}

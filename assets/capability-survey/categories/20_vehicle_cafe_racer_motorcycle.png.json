@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A photoreal cinematic shot of a vintage cafe-racer motorcycle parked on cobblestone alleyway at golden hour. The motorcycle is matte deep British Racing Green with brown leather seat, polished chrome exhaust, spoke wheels. Worn brick walls on both sides, soft warm sun raking from the left, long shadows. A small wooden crate beside the bike with an old leather helmet on top. Shallow depth of field with bokeh in the background. Atmospheric, high-end automotive photography style, no people.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T16:48:21.579921"
+}

@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A minimalist abstract logo mark for a hypothetical AI infrastructure startup called \"VECTRA\". Geometric mark: a single continuous line forming a stylized upward arrow that loops elegantly into a circle at its base, suggesting iteration and ascent. Two-tone: deep indigo #2a2d6e primary and a single warm amber #f4a020 accent dot at the top of the arrow. Flat vector style, sharp clean edges, no gradients. The wordmark \"VECTRA\" is rendered to the right of the symbol in a clean modern geometric sans-serif, slight letter-spacing, deep indigo. White background, generous padding, centered overall composition.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:41:56.888489"
+}

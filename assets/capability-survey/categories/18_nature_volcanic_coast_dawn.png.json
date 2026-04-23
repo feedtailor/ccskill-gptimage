@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A photoreal seascape at dawn — jagged volcanic black-rock coastline with crashing turquoise waves frozen in long-exposure silk-smooth motion. Soft pastel sunrise sky in pink-orange-violet gradient. A single weathered cypress tree growing from a cliff edge in silhouette on the right. Distant sea stacks fading into mist. Hyper-real, fine detail in rocks and water spray, professional landscape photography, ND filter long exposure aesthetic.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T16:47:52.361781"
+}

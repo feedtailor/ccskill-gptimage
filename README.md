@@ -15,9 +15,24 @@ Sister skill: [ccskill-nanobanana](https://github.com/feedtailor/ccskill-nanoban
 - **Auto metadata sidecar** — prompt, `revised_prompt`, parameters saved as JSON
 - **Cost-aware defaults** — built-in knowledge that portrait `high` is cheaper than square `high`
 
-> **gpt-image-2 spec notes**:
-> - **`input_fidelity` is unnecessary** — gpt-image-2 always processes input images at maximum fidelity automatically. Specifying the parameter returns an error, but this is "always on", not "missing". Reference preservation is in fact strong; the trade-off is more input-image tokens (cost) when editing.
-> - **No transparent background**. If you need transparency: (a) post-process with `rembg` etc., (b) switch to `--model gpt-image-1.5`, or (c) use the sister skill [ccskill-nanobanana](https://github.com/feedtailor/ccskill-nanobanana).
+## Examples
+
+A handful of one-shot examples, all generated at `--quality high` with **no regeneration and no human prompt-writing** (Claude composed the prompts from intent + SKILL.md). The full **35-image gallery** including a 3×3 resolution-quality cost grid is at [`docs/gallery.md`](docs/gallery.md) →
+
+<table>
+<tr>
+  <td align="center" width="33%"><img src="assets/capability-survey/categories/01_photorealistic_portrait_woman.png" width="260" alt="Photoreal portrait"></td>
+  <td align="center" width="33%"><img src="assets/capability-survey/categories/19_urban_tokyo_rainy_night.png" width="260" alt="Tokyo rainy night"></td>
+  <td align="center" width="33%"><a href="docs/gallery.md"><img src="assets/capability-survey/categories/18_nature_volcanic_coast_dawn.png" width="260" alt="See the full gallery"></a></td>
+</tr>
+<tr>
+  <td align="center" width="33%"><img src="assets/capability-survey/categories/24_line_drawing_fashion_sketch.png" width="260" alt="Fashion line drawing"></td>
+  <td align="center" width="33%"><img src="assets/capability-survey/categories/14_japanese_poster_vertical_tategaki.png" width="260" alt="Vertical Japanese poster"></td>
+  <td align="center" width="33%"><img src="assets/capability-survey/categories/06_ui_mockup_settings_japanese.png" width="260" alt="iOS Settings UI in Japanese"></td>
+</tr>
+</table>
+
+35/35 succeeded in one shot. Total cost for the entire survey: **¥910 ($6.04)**.
 
 ## Setup
 

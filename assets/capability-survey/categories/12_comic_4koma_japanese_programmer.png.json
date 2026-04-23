@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A traditional Japanese 4-panel manga (4-koma) strip, vertical layout with panels stacked top-to-bottom, clean black ink linework on white. Title at the very top in bold Japanese gothic font: \"プログラマあるある\". Panel 1: a young female programmer at her desk staring at a laptop, speech bubble \"なぜか動いた…!\". Panel 2: same character with a thoughtful face, speech bubble \"なぜ動くんだろう?\". Panel 3: she edits the code, speech bubble \"ちょっと整理しよう\". Panel 4: she stares at the broken laptop with a deadpan face, speech bubble \"なぜ動かない…!?\". Soft screentone shading on backgrounds. Each panel has a clear black border. Author tag in the bottom-right corner: small text \"ccskill gptimage\".",
+  "size": "1024x1536",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:42:03.481000"
+}

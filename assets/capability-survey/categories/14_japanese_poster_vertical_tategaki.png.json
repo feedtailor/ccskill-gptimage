@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A bold Japanese editorial poster, vertical orientation. Centered large vertical title text reading top-to-bottom with the exact characters \"未来は描かれるものではない、計画されるものだ。\" in elegant Japanese serif font (Mincho), warm ivory white. The Japanese is set as a single tategaki vertical column running from top-right to bottom. To the left of the title, a smaller horizontal English subtitle: the exact text \"The future is not drawn, it is planned.\" in thin sans-serif. Background: deep indigo #0e1a3a with very subtle paper texture. A thin gold horizontal rule above and below the English subtitle. Bottom-right tiny attribution text in soft gold: \"ccskill-gptimage / 2026\". Generous negative space. Editorial magazine aesthetic.",
+  "size": "1024x1536",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:42:36.205055"
+}

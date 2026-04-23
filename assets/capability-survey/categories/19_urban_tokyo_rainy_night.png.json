@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A photorealistic atmospheric night scene of Tokyo Shibuya-style scramble crossing right after rain. Wet asphalt mirroring vibrant neon signs (Japanese kanji storefronts in deep red, electric blue, warm yellow), crowds with umbrellas crossing in slight motion blur, taxis with red brake lights. Composition: medium-wide shot from a slight elevation. Cinematic color grade with teal-orange tension. Authentic, no specific recognizable brand logos. No text overlay.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T16:48:18.914779"
+}

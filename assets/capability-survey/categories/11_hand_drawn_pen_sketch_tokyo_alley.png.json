@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A loose hand-drawn ink pen urban sketch of a narrow Tokyo back alley at dusk, in the style of an artists travel sketchbook. Confident black ink lines with visible pen pressure variation, light watercolor wash in warm sepia and muted teal accents. Composition includes a small izakaya with red lanterns, a bicycle leaning against a wall, overhead tangled power lines, and a softly glowing vending machine. Loose shading hatching, paper grain visible, a deliberate watercolor bleed at the edges. Authentic urban-sketcher aesthetic, no caption text.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T13:42:19.481148"
+}
