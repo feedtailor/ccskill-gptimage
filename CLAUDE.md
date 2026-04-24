@@ -31,10 +31,9 @@ generated_images/ に保存 + メタデータ JSON サイドカー
 ## 参照
 
 - **画像生成スクリプト**: @generate_image.py
-- **スキル定義**: @.claude/skills/ccskill-gptimage/SKILL.md / SKILL.ja.md
+- **スキル定義 + プロンプトベストプラクティス + ユースケース別プロンプト集**: @.claude/skills/ccskill-gptimage/SKILL.md / SKILL.ja.md / prompts/
 - **テスト**: @tests/test_generate_image.py
 - **環境変数テンプレート**: @.env.example
-- **技術リファレンス(API 仕様・コスト・プロンプト)**: @gptimageguide.md
 - **ロードマップ**: @.claude/issues/
 
 ## テスト手順
@@ -58,11 +57,50 @@ python -m pytest tests/ -v
 - タイムアウト: 高品質・複雑プロンプトで最大 2 分。SDK のタイムアウトは ≥120 秒に設定
 - レスポンスは常に `b64_json` のみ(URL は返らない)
 - Function calling / Structured outputs 非対応
-- コスト目安(1024×1024): `low` $0.006 / `medium` $0.053 / `high` $0.211
-- **コスト罠**: 1024×1536 (縦長) の `high` は $0.165 で正方形 `high` より安い
 - `partial_images` は 1 枚あたり +100 tok 追加コスト
 
-> 上記の `transparent` / `input_fidelity` 非対応は、社内ガイド `gptimageguide.md` の初版記述と異なる(2026-04-23 に実 API で確認、issue #002)。ガイド側もこれに合わせて訂正済み。
+### コスト表(出力トークンと 1 枚あたりの目安)
+
+per image トークン数(出力単価 $30 / 1M tok):
+
+| quality | 1024×1024 | 1024×1536 | 1536×1024 |
+|---------|----------|----------|----------|
+| low     | 272 tok ($0.006) | 408 tok ($0.011) | 400 tok ($0.011) |
+| medium  | 1,056 tok ($0.053) | 1,584 tok ($0.080) | 1,568 tok ($0.079) |
+| high    | 4,160 tok ($0.211) | 6,240 tok (**$0.165**) | 6,208 tok ($0.210) |
+
+**コスト罠**: `1024×1536` (縦長) の `high` は **$0.165** で、`1024×1024` の `high` ($0.211) より安い。ポートレート用途は意図的に縦長を選ぶ。
+
+(出典: [OpenAI Image generation guide](https://developers.openai.com/api/docs/guides/image-generation) — 2026-04-23 確認)
+
+### Responses API(Phase 0.5 で追加予定)
+
+マルチターン編集向けのもう 1 つの経路。`previous_response_id` で前ターンを継承するため、毎回画像を再アップロードする必要がない:
+
+```python
+resp = client.responses.create(
+    model="gpt-5",
+    input="Generate an image of a gray tabby cat hugging an otter with an orange scarf",
+    tools=[{"type": "image_generation"}],
+)
+
+resp2 = client.responses.create(
+    model="gpt-5",
+    previous_response_id=resp.id,
+    input="Now make it look photorealistic, golden hour lighting",
+    tools=[{"type": "image_generation"}],
+)
+```
+
+Responses API 限定で `action` パラメータ(`auto` / `generate` / `edit`)で生成と編集を明示制御可能。Phase 0.5 で `--continue <response_id>` モードを `generate_image.py` に追加予定。
+
+### 運用上の落とし穴
+
+- **レイテンシ**: 高品質・複雑プロンプトは最大 2 分かかる。SDK タイムアウトは 120 秒以上に
+- **一貫性**: キャラクターやブランド要素の同一性は seed 機構が無いため微妙に揺れる。**参照画像 + プロンプトで明示** が必須(Cookbook 6.4 パターン、SKILL の `prompts/character-and-concept.md`)
+- **レイアウト制御**: 厳密な座標指定は苦手。マスク併用か、構造化プロンプトで段階的に
+- **Tier 制限**: Tier 1 は 5 IPM。本番バッチ投入は Tier 3 以上が現実的
+- **`gpt-image-1.5` はデフォルトから降格したが API では利用可能**。透過 PNG のための旧モデルとして残されている
 
 ## コミットメッセージ規約
 
@@ -106,7 +144,7 @@ python -m pytest tests/ -v
 
 ## 関連ドキュメント
 
-- `gptimageguide.md` — gpt-image-2 API の技術ガイド(社内まとめ)
 - 公式: [OpenAI Image generation guide](https://developers.openai.com/api/docs/guides/image-generation)
 - 公式: [gpt-image-2 model page](https://developers.openai.com/api/docs/models/gpt-image-2)
+- 公式: [GPT Image Generation Models Prompting Guide (Cookbook)](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
 - 姉妹スキル: [ccskill-nanobanana](https://github.com/feedtailor/ccskill-nanobanana)
