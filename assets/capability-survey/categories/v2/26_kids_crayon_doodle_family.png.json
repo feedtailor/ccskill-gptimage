@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "A genuine children's crayon-and-marker doodle photographed from above (intended use, keepsake photo).\nScene: a sheet of slightly crumpled white paper with subtle wrinkles and faint pencil shadow marks, photographed top-down.\nSubject: the child's drawing occupying most of the paper.\nKey details: a cheerful family of three holding hands in front of a triangular-roof house — mom in pink dress, dad in blue, child in red; a bright yellow sun with rays in the upper-left corner; two fluffy white clouds; two simple flowers with round centers; a smiling cat on the right; wobbly imperfect child-like lines, vibrant uneven crayon textures, mixed crayon and felt-tip marker strokes.\nConstraints: no text on the drawing, no adult-style lettering, no signature, no watermark.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T07:14:29.017085"
+}

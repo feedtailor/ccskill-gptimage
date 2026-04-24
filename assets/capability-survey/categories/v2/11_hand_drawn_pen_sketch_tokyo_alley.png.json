@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Urban-sketcher travel-journal illustration (intended use).\nScene: a narrow Tokyo back alley at dusk, deliberate watercolor bleed at the edges, visible paper grain.\nSubject: the alley view with a small izakaya on the right.\nKey details: confident black ink pen lines with pressure variation, light watercolor wash in warm sepia and muted teal accents, red lanterns above the izakaya, a bicycle leaning against a wall, overhead tangled power lines, a softly glowing vending machine on the left, loose cross-hatching for shadows.\nConstraints: no caption text, no watermark, no signature, no logos.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T06:42:41.935282"
+}

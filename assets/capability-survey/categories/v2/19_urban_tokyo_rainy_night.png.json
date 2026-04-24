@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Cinematic street photography (intended use).\nScene: a Tokyo Shibuya-style scramble crossing right after rain at night, wet asphalt mirroring neon signs.\nSubject: the crossing in a medium-wide shot from a slight elevation, crowds with umbrellas in slight motion blur, taxis with glowing red brake lights.\nKey details: photorealistic, Japanese kanji storefront neons in deep red, electric blue, warm yellow reflecting on the wet pavement; cinematic teal-orange color grade; atmospheric depth with soft rain haze in the background; authentic Tokyo nighttime mood.\nConstraints: no recognizable brand names or logos, no readable specific text on signs (kanji shapes only), no watermark.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T06:59:51.780428"
+}

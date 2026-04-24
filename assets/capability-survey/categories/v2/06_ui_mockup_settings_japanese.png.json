@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Realistic iOS 18 Japanese settings screen mockup (intended use, as if shipped).\nScene: an iPhone-shaped frameless screen on soft light-gray background.\nSubject: the settings list view with grouped rows.\nKey details: top status bar shows exact \"9:41\" time in system font on the left, signal/wifi/battery icons on the right; large navigation title \"設定\" in bold Japanese system font below the status bar; first grouped section rows — \"機内モード\" with right-side toggle OFF, \"Wi-Fi\" with right-aligned text \"FEEDTAILOR-5G\" and chevron, \"Bluetooth\" with right-aligned text \"オン\" and chevron, \"モバイル通信\" with chevron; second grouped section rows — \"通知\" (orange bell icon), \"サウンドと触覚\" (pink speaker icon), \"おやすみモード\" (purple moon icon), \"スクリーンタイム\" (indigo hourglass icon), each icon in a small rounded-square colored tile; subtle 1px separators between rows; sharp pixel-perfect rendering.\nConstraints: all Japanese labels rendered verbatim in quotes above; no watermark, no extra text outside the specified labels, no logos.",
+  "size": "1024x1536",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T06:31:57.634222"
+}

@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Pet portrait photography (intended use).\nScene: a Japanese autumn park with soft warm afternoon light, fallen red maple leaves on the ground, golden trees in blurred bokeh background.\nSubject: a Shiba Inu dog sitting, looking slightly off-camera with a gentle relaxed expression.\nKey details: photorealistic; fine fur detail in honey-tan and white, alert triangular ears, warm brown eyes, mouth slightly open in a relaxed smile; shallow depth of field; eye-level composition; catch-light in the eyes.\nConstraints: no other animals, no humans, no text, no watermark, no collar tags with writing.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T07:06:05.555677"
+}

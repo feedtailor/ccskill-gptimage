@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Photorealistic food photography (intended use, editorial food magazine).\nScene: a dark wooden table with subtle wood grain, soft warm natural light from upper-left, gentle steam rising.\nSubject: overhead shot of a bowl of tonkotsu ramen.\nKey details: rich creamy white broth, curly noodles, two slices of chashu pork, a soft-boiled egg cut in half showing orange yolk, green scallions, half a nori sheet, sprinkle of black sesame, a small mound of finely chopped white onion; chopsticks resting on a ceramic chopstick rest beside the bowl; a small dish of red pickled ginger; photorealistic, shallow depth of field softening the bowl edges.\nConstraints: no watermark, no extra text, no logos, no cutlery other than the described chopsticks.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T06:38:11.892970"
+}

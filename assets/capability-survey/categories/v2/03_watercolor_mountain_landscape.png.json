@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Traditional East-Asian watercolor landscape (intended use).\nScene: multiple receding mountain silhouettes at dawn, a small calm reflective lake in the foreground.\nSubject: the layered mountains themselves, with gradations in blue-gray value from deep close to pale far.\nKey details: soft pink-orange sky, visible paper grain texture, generous wet-on-wet bleeding, loose confident brush strokes, classical East Asian composition balance.\nConstraints: no figures, no text, no watermark, no seal.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T23:05:56.984529"
+}

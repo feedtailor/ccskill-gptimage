@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Traditional Japanese sumi-e ink wash painting (intended use).\nScene: aged rice paper surface with visible texture and subtle ink bleed, abundant negative space.\nSubject: a solitary heron standing in shallow water amid a few delicate reeds, looking down.\nKey details: bold confident brush strokes for the heron's body in deep black ink, soft gray washes for water reflection and distant mist, ink gradation from rich dark to pale wash; a single small red hanko seal in the lower-right corner; minimalist classical East Asian composition.\nConstraints: no modern elements, no English text, no watermark, only the one hanko seal.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T07:12:10.854586"
+}

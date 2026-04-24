@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Anime character illustration (intended use).\nScene: a misty mountain backdrop, soft falling cherry-blossom petals in foreground, plain atmospheric background.\nSubject: a young female warrior standing three-quarter view, looking forward with a calm confident expression, holding a sheathed katana at her side.\nKey details: long silver hair in a high ponytail, dark navy traditional Japanese armor with subtle gold trim, cel-shaded with clean ink linework, flat color shading with limited gradients, soft pink petals drifting across the frame.\nConstraints: no watermark, no extra text, no logos.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-23T23:04:04.578578"
+}

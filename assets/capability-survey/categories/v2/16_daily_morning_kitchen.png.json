@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Lifestyle photography editorial snapshot (intended use).\nScene: a Japanese home kitchen in the morning, soft morning side-light from a window with sheer linen curtain.\nSubject: photorealistic hands of a woman pouring drip coffee into a glass carafe, shot from a top-down 45-degree angle.\nKey details: on the counter — a small wooden cutting board with a half-cut peach, an open notebook with a pen, a ceramic mug, a sprig of basil; background slightly out of focus showing wooden cabinets and a hanging copper pot; warm earthy color grade, fine film grain, 35mm film aesthetic, close composition.\nConstraints: no watermark, no extra text, no logos.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T06:54:22.907415"
+}

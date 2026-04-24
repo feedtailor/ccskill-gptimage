@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Cinematic street photography of central Tokyo at night, intended use: editorial / travel magazine cover.\nScene: the famous Shibuya-style scramble crossing right after rain. Wet black asphalt acting as a giant mirror, reflecting the surrounding neon signs in shimmering color smears. Diagonal pedestrian crossings (the X-shaped scramble layout) with crowds of people walking from multiple directions, holding clear and dark umbrellas, captured in slight motion blur to convey the energy.\nSubject: the wide crossing seen in a medium-wide shot from a slight elevation, taxis with red glowing brake lights waiting at the crosswalk, towering buildings on all sides.\nKey details: photorealistic; surrounding skyscrapers covered with vivid Japanese signage — large vertical (tategaki) kanji shop signs in deep crimson, electric cyan and warm gold; horizontal LED billboards with mixed kanji + katakana; small ramen-shop lanterns glowing on side streets; karaoke and izakaya signs in stacked Japanese characters. The Japanese characters are legible and confident (not abstract scribbles), evoking real Shibuya nighttime atmosphere. Cinematic teal-orange color grade. Soft rain haze in the distance giving atmospheric depth. Reflections on wet pavement carry shimmering Japanese characters from the signs above.\nConstraints: no specific recognizable real brand logos or company names; the Japanese text on signs should be plausible Japanese language (not English alphabet, not gibberish); no watermark, no caption text overlay.",
+  "size": "1536x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T11:46:29.716905"
+}

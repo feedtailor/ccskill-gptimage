@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Tech architecture documentation diagram (intended use).\nScene: a clean light-gray background with generous spacing.\nSubject: a microservices architecture flowchart.\nKey details: centered top rounded-rectangle labeled exactly \"API Gateway\" in deep blue; three downward arrows fan out to three rounded-rectangles labeled exactly \"Auth Service\", \"Order Service\", \"Payment Service\" in teal; each service connects downward to a database cylinder labeled exactly \"auth_db\", \"orders_db\", \"payments_db\"; on the right, a separate rounded-rectangle labeled exactly \"Message Queue (Kafka)\" connected from each service by dotted arrows; SVG-style flat shapes, sharp sans-serif typography, no shadows.\nConstraints: render labels verbatim, no other text, no watermark, no logos.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T06:35:41.394241"
+}

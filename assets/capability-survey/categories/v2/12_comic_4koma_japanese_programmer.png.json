@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Traditional Japanese 4-koma manga strip (intended use).\nScene: vertical layout with 4 equal-size panels stacked top-to-bottom, clean black ink linework on white, each panel bordered with a solid black rectangle.\nSubject: a young female programmer character, consistent across all 4 panels (same short bob hair, same round glasses, same gray hoodie).\nKey details: above panel 1 a bold Japanese gothic title exactly \"プログラマあるある\"; Panel 1 — she stares at a laptop, speech bubble exactly \"なぜか動いた…!\"; Panel 2 — same character with a thoughtful hand-on-chin pose, speech bubble exactly \"なぜ動くんだろう?\"; Panel 3 — she types on the laptop, speech bubble exactly \"ちょっと整理しよう\"; Panel 4 — she stares at the broken laptop with a deadpan face, speech bubble exactly \"なぜ動かない…!?\"; soft screentone on backgrounds; tiny attribution bottom-right exactly \"ccskill gptimage\".\nConstraints: render every Japanese string verbatim, no extra characters; no watermark outside the attribution; same character appearance in every panel.",
+  "size": "1024x1536",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T06:44:41.500133"
+}

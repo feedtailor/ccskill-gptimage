@@ -1,0 +1,14 @@
+{
+  "model": "gpt-image-2",
+  "prompt": "Original non-infringing brand logo for a fictional AI infrastructure startup (intended use).\nScene: plain white background, centered composition, generous padding.\nSubject: a geometric logo mark plus wordmark for a company called VECTRA.\nKey details: mark is a single continuous clean line forming a stylized upward arrow that loops elegantly into a circle at its base, suggesting iteration and ascent; primary color deep indigo #2a2d6e; a single warm amber #f4a020 accent dot at the tip of the arrow; to the right of the mark, the wordmark exactly \"VECTRA\" in a clean modern geometric sans-serif (Inter-like), slight letter-spacing, deep indigo; flat vector style, sharp clean edges, no gradients.\nConstraints: original design, no trademarks, no watermark, no extra text beyond the wordmark, no taglines.",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "auto",
+  "output_format": "png",
+  "moderation": "auto",
+  "reference_images": [],
+  "mask": null,
+  "input_fidelity": null,
+  "revised_prompt": null,
+  "timestamp": "2026-04-24T06:46:43.397349"
+}
