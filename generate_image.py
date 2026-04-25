@@ -16,7 +16,11 @@ import argparse
 import base64
 import contextlib
 import json
+import os
+import shutil
+import subprocess
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -33,6 +37,7 @@ DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_OUTPUT_DIR = "./generated_images"
 DEFAULT_BACKGROUND = "auto"
 DEFAULT_MODERATION = "auto"
+DEFAULT_BACKEND = "auto"
 
 OUTPUT_FORMAT_TO_EXT = {
     "png": ".png",
@@ -46,6 +51,12 @@ BACKGROUND_CHOICES = ["auto", "transparent", "opaque"]
 OUTPUT_FORMAT_CHOICES = ["png", "jpeg", "webp"]
 MODERATION_CHOICES = ["auto", "low"]
 INPUT_FIDELITY_CHOICES = ["high", "low"]
+BACKEND_CHOICES = ["auto", "codex", "api"]
+
+CODEX_HOME = Path.home() / ".codex"
+CODEX_AUTH_FILE = CODEX_HOME / "auth.json"
+CODEX_GENERATED_DIR = CODEX_HOME / "generated_images"
+CODEX_SUBPROCESS_TIMEOUT = 300
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -145,7 +156,193 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=None,
         help="出力ファイル名(拡張子は output_format から決定)。未指定時はタイムスタンプ",
     )
+    parser.add_argument(
+        "--backend",
+        type=str,
+        default=DEFAULT_BACKEND,
+        choices=BACKEND_CHOICES,
+        help=(
+            f"画像生成 backend (デフォルト: {DEFAULT_BACKEND})。"
+            " auto = Codex CLI(ChatGPT サブスク認証あり)があれば codex、"
+            " 失敗時は OPENAI_API_KEY があれば api にフォールバック。"
+        ),
+    )
     return parser.parse_args(argv)
+
+
+# ---------------------------------------------------------------------------
+# Backend detection / dispatch (issue #017: Codex CLI integration)
+# ---------------------------------------------------------------------------
+
+
+def _codex_subscription_available() -> bool:
+    """Codex CLI が PATH にあり、ChatGPT サブスク認証されているか判定。
+
+    判定根拠は `~/.codex/auth.json` の `tokens.access_token` の存在。
+    `auth_mode` フィールド名は古い版のものらしく、現行版では tokens 構造のみ。
+    """
+    if shutil.which("codex") is None:
+        return False
+    if not CODEX_AUTH_FILE.exists():
+        return False
+    try:
+        data = json.loads(CODEX_AUTH_FILE.read_text())
+    except (json.JSONDecodeError, OSError):
+        return False
+    tokens = data.get("tokens") or {}
+    return bool(tokens.get("access_token"))
+
+
+def _resolve_backend(requested: str) -> str:
+    """`auto` を実 backend に解決する。明示指定はそのまま返す。
+
+    auto の場合: codex 利用可能 → codex / それ以外 → api(api キー無くても api を返し
+    後段の OpenAI() で native エラーに任せる)。
+    """
+    if requested != "auto":
+        return requested
+    if _codex_subscription_available():
+        return "codex"
+    return "api"
+
+
+def _find_latest_codex_image(since_mtime: float) -> Path | None:
+    """`since_mtime` より後に生成された最新の `ig_*.png` を返す。
+
+    Codex CLI は出力先指定を受け付けないため、画像は常に
+    `~/.codex/generated_images/<session-id>/ig_*.png` に出力される。
+    呼び出し側が指定パスへ移すために、最新ファイルを特定する必要がある。
+    """
+    if not CODEX_GENERATED_DIR.exists():
+        return None
+    latest_mtime = -1.0
+    latest_path: Path | None = None
+    for p in CODEX_GENERATED_DIR.rglob("ig_*.png"):
+        try:
+            m = p.stat().st_mtime
+        except OSError:
+            continue
+        if m > since_mtime and m > latest_mtime:
+            latest_mtime = m
+            latest_path = p
+    return latest_path
+
+
+def _build_codex_prompt(
+    prompt: str,
+    *,
+    size: str,
+    quality: str,
+    output_format: str,
+    background: str,
+    reference_count: int,
+) -> str:
+    """Codex agent への指示プロンプトを組み立てる。
+
+    重要: 「image_gen を直接使え、API スクリプトは書くな」を必ず明記する。
+    これがないと Codex は curl/Python で API 直叩きルートを取り、
+    サブスク枠ではなく従量課金になる(note.com/mauekusa の知見)。
+    """
+    lines = [
+        "OpenAI gpt-image-2 を built-in image_gen tool 経由で呼び出してください。",
+        "重要: API キーやスクリプト (curl / python / node) は一切書かず、"
+        "組み込みの image_gen ツールを直接使ってください。",
+        f"size: {size}",
+        f"quality: {quality}",
+        f"output format: {output_format}",
+    ]
+    if background and background != "auto":
+        lines.append(f"background: {background}")
+    if reference_count > 0:
+        lines.append(
+            f"添付された {reference_count} 枚の参照画像をベースに edit モードで生成してください。"
+            " 元画像の主要要素(人物の顔・構図・背景など)はできる限り保持してください。"
+        )
+    lines.append("")
+    lines.append("プロンプト:")
+    lines.append(prompt)
+    return "\n".join(lines)
+
+
+def _generate_via_codex(
+    prompt: str,
+    *,
+    size: str,
+    quality: str,
+    output_format: str,
+    background: str,
+    output_path: Path,
+    reference_images: list[str] | None,
+) -> tuple[Path, str | None] | None:
+    """Codex CLI 経由で画像生成。成功時は (output_path, revised_prompt) を返す。失敗時 None。
+
+    失敗の原因は subprocess エラー / image_gen 出力なし / コピー失敗 など。
+    呼び出し側はこれを見て auto モードなら API へフォールバックできる。
+    """
+    codex_prompt = _build_codex_prompt(
+        prompt,
+        size=size,
+        quality=quality,
+        output_format=output_format,
+        background=background,
+        reference_count=len(reference_images or []),
+    )
+    cmd: list[str] = [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--sandbox",
+        "workspace-write",
+        codex_prompt,
+    ]
+    # `-i` は variadic なので必ず prompt の後に置く(逆だと prompt まで画像として食われる)
+    for ref in reference_images or []:
+        cmd.extend(["-i", ref])
+
+    started_at = time.time()
+    try:
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=CODEX_SUBPROCESS_TIMEOUT,
+        )
+    except subprocess.TimeoutExpired:
+        print("[Error] Codex CLI が timeout しました")
+        return None
+    except FileNotFoundError:
+        print("[Error] codex コマンドが PATH に見つかりません")
+        return None
+
+    if proc.returncode != 0:
+        print(f"[Error] Codex CLI exit code {proc.returncode}: {proc.stderr.strip()[:200]}")
+        return None
+
+    image = _find_latest_codex_image(started_at)
+    if image is None:
+        print("[Error] Codex 経由で生成された画像が見つかりませんでした")
+        return None
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(image, output_path)
+    revised = _extract_revised_prompt_from_codex_log(proc.stdout)
+    return (output_path, revised)
+
+
+def _extract_revised_prompt_from_codex_log(stdout: str) -> str | None:
+    """Codex のログ末尾から agent の最終応答(revised_prompt 相当)を抽出。
+
+    現状はベストエフォート: ログ末尾に `codex` 行があればその後ろの行を返す。
+    取得できなくても致命的ではないので None で許容。
+    """
+    if not stdout:
+        return None
+    lines = stdout.splitlines()
+    for i in range(len(lines) - 1, -1, -1):
+        if lines[i].strip() == "codex":
+            tail = "\n".join(lines[i + 1 :]).strip()
+            return tail or None
+    return None
 
 
 def get_output_path(
@@ -220,8 +417,15 @@ def generate_image(
     mask: str | None = None,
     input_fidelity: str | None = None,
     output_name: str | None = None,
+    backend: str = DEFAULT_BACKEND,
 ) -> str | None:
-    """gpt-image-2 で画像を生成し、ファイルパスを返す。失敗時は None。"""
+    """gpt-image-2 で画像を生成し、ファイルパスを返す。失敗時は None。
+
+    backend:
+        - "auto"  (推奨): Codex CLI(ChatGPT サブスク)があればそれを使い、失敗時は API にフォールバック
+        - "codex": Codex CLI を必ず使う(失敗時はフォールバックしない)
+        - "api"  : OpenAI API を直接叩く(従来動作)
+    """
     if reference_images:
         for p in reference_images:
             if not Path(p).exists():
@@ -231,6 +435,64 @@ def generate_image(
         print(f"[Error] マスク画像が見つかりません: {mask}")
         return None
 
+    effective_backend = _resolve_backend(backend)
+
+    if effective_backend == "codex":
+        # Codex は mask を渡せないので、auto モードでは API にフォールバック
+        if mask:
+            if backend == "auto" and os.environ.get("OPENAI_API_KEY"):
+                print("[Info] mask は Codex 経由で渡せません。API backend にフォールバックします")
+                effective_backend = "api"
+            elif backend == "codex":
+                print("[Error] --backend codex では --mask を使用できません")
+                return None
+            else:
+                print("[Error] mask は Codex backend では非対応で API キーもありません")
+                return None
+
+    if effective_backend == "codex":
+        output_path = get_output_path(output_dir, output_format, name=output_name)
+        codex_result = _generate_via_codex(
+            prompt,
+            size=size,
+            quality=quality,
+            output_format=output_format,
+            background=background,
+            output_path=output_path,
+            reference_images=reference_images,
+        )
+        if codex_result is not None:
+            saved_path, revised = codex_result
+            if revised:
+                print(f"[Revised] {revised}")
+            print(f"[Success] 画像を保存しました (backend=codex): {saved_path}")
+            _save_metadata(
+                saved_path,
+                _build_meta(
+                    model=model,
+                    prompt=prompt,
+                    size=size,
+                    quality=quality,
+                    background=background,
+                    output_format=output_format,
+                    moderation=moderation,
+                    reference_images=reference_images,
+                    mask=mask,
+                    input_fidelity=input_fidelity,
+                    revised=revised,
+                    backend="codex",
+                ),
+            )
+            return str(saved_path)
+
+        # Codex 失敗時のフォールバック判定
+        if backend == "auto" and os.environ.get("OPENAI_API_KEY"):
+            print("[Info] Codex backend が失敗しました。API backend にフォールバックします")
+            effective_backend = "api"
+        else:
+            return None
+
+    # API backend
     client = OpenAI()
 
     base_kwargs = _build_generate_kwargs(
@@ -276,7 +538,43 @@ def generate_image(
     output_path.write_bytes(base64.b64decode(b64))
     print(f"[Success] 画像を保存しました: {output_path}")
 
-    meta = {
+    _save_metadata(
+        output_path,
+        _build_meta(
+            model=model,
+            prompt=prompt,
+            size=size,
+            quality=quality,
+            background=background,
+            output_format=output_format,
+            moderation=moderation,
+            reference_images=reference_images,
+            mask=mask,
+            input_fidelity=input_fidelity,
+            revised=revised,
+            backend="api",
+        ),
+    )
+
+    return str(output_path)
+
+
+def _build_meta(
+    *,
+    model: str,
+    prompt: str,
+    size: str,
+    quality: str,
+    background: str,
+    output_format: str,
+    moderation: str,
+    reference_images: list[str] | None,
+    mask: str | None,
+    input_fidelity: str | None,
+    revised: str | None,
+    backend: str,
+) -> dict:
+    return {
         "model": model,
         "prompt": prompt,
         "size": size,
@@ -288,11 +586,9 @@ def generate_image(
         "mask": mask,
         "input_fidelity": input_fidelity,
         "revised_prompt": revised,
+        "backend": backend,
         "timestamp": datetime.now().isoformat(),
     }
-    _save_metadata(output_path, meta)
-
-    return str(output_path)
 
 
 def main():
@@ -331,6 +627,7 @@ def main():
             mask=args.mask,
             input_fidelity=args.input_fidelity,
             output_name=args.output_name,
+            backend=args.backend,
         )
         if result is None:
             sys.exit(1)

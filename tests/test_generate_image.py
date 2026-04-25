@@ -12,6 +12,8 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from generate_image import (
+    BACKEND_CHOICES,
+    DEFAULT_BACKEND,
     DEFAULT_BACKGROUND,
     DEFAULT_MODEL,
     DEFAULT_MODERATION,
@@ -20,6 +22,8 @@ from generate_image import (
     DEFAULT_QUALITY,
     DEFAULT_SIZE,
     OUTPUT_FORMAT_TO_EXT,
+    _codex_subscription_available,
+    _resolve_backend,
     generate_image,
     get_output_path,
     main,
@@ -41,6 +45,15 @@ def _make_image_response(b64: str = DUMMY_PNG_B64, revised_prompt: str | None = 
     response = Mock()
     response.data = [datum]
     return response
+
+
+@pytest.fixture(autouse=True)
+def _force_api_backend(request, monkeypatch):
+    """既存テストは Codex を使わない前提に固定する。
+    backend 検出ロジックそのものをテストする場合は @pytest.mark.no_force_api_backend で opt-out。"""
+    if request.node.get_closest_marker("no_force_api_backend"):
+        return
+    monkeypatch.setattr("generate_image._codex_subscription_available", lambda: False)
 
 
 class TestParseArgs:
@@ -492,3 +505,305 @@ class TestMainValidation:
             self._run_main(["p", "--reference", "ref.png", "--input-fidelity", "high"])
             assert mock_gen.call_args.kwargs["input_fidelity"] is None
         assert "[Info]" in capsys.readouterr().out
+
+
+# ---------------------------------------------------------------------------
+# Backend detection / dispatch (Codex CLI integration, issue #017)
+# ---------------------------------------------------------------------------
+
+
+class TestBackendChoices:
+    def test_default_backend_is_auto(self):
+        assert DEFAULT_BACKEND == "auto"
+
+    def test_backend_choices_contains_three(self):
+        assert set(BACKEND_CHOICES) == {"auto", "codex", "api"}
+
+    def test_parse_args_default_backend(self):
+        args = parse_args(["p"])
+        assert args.backend == DEFAULT_BACKEND
+
+    def test_parse_args_explicit_backend(self):
+        args = parse_args(["p", "--backend", "codex"])
+        assert args.backend == "codex"
+
+
+@pytest.mark.no_force_api_backend
+class TestCodexSubscriptionAvailable:
+    """`_codex_subscription_available()` 自身の挙動。
+    autouse fixture を opt-out して実関数を呼ぶ。"""
+
+    def test_returns_false_when_codex_not_in_path(self, monkeypatch):
+        monkeypatch.setattr("generate_image.shutil.which", lambda name: None)
+        assert _codex_subscription_available() is False
+
+    def test_returns_false_when_auth_file_missing(self, monkeypatch, tmp_path):
+        monkeypatch.setattr("generate_image.shutil.which", lambda name: "/usr/local/bin/codex")
+        monkeypatch.setattr("generate_image.CODEX_AUTH_FILE", tmp_path / "missing.json")
+        assert _codex_subscription_available() is False
+
+    def test_returns_false_when_auth_file_invalid_json(self, monkeypatch, tmp_path):
+        bad = tmp_path / "auth.json"
+        bad.write_text("this is not json")
+        monkeypatch.setattr("generate_image.shutil.which", lambda name: "/usr/local/bin/codex")
+        monkeypatch.setattr("generate_image.CODEX_AUTH_FILE", bad)
+        assert _codex_subscription_available() is False
+
+    def test_returns_false_when_tokens_missing(self, monkeypatch, tmp_path):
+        f = tmp_path / "auth.json"
+        f.write_text(json.dumps({"OPENAI_API_KEY": "sk-foo"}))
+        monkeypatch.setattr("generate_image.shutil.which", lambda name: "/usr/local/bin/codex")
+        monkeypatch.setattr("generate_image.CODEX_AUTH_FILE", f)
+        assert _codex_subscription_available() is False
+
+    def test_returns_false_when_access_token_missing(self, monkeypatch, tmp_path):
+        f = tmp_path / "auth.json"
+        f.write_text(json.dumps({"tokens": {"refresh_token": "x"}}))
+        monkeypatch.setattr("generate_image.shutil.which", lambda name: "/usr/local/bin/codex")
+        monkeypatch.setattr("generate_image.CODEX_AUTH_FILE", f)
+        assert _codex_subscription_available() is False
+
+    def test_returns_true_when_chatgpt_subscription_logged_in(self, monkeypatch, tmp_path):
+        f = tmp_path / "auth.json"
+        f.write_text(json.dumps({"tokens": {"access_token": "ey...", "refresh_token": "rt"}}))
+        monkeypatch.setattr("generate_image.shutil.which", lambda name: "/usr/local/bin/codex")
+        monkeypatch.setattr("generate_image.CODEX_AUTH_FILE", f)
+        assert _codex_subscription_available() is True
+
+
+class TestResolveBackend:
+    def test_explicit_codex_returns_codex(self):
+        assert _resolve_backend("codex") == "codex"
+
+    def test_explicit_api_returns_api(self):
+        assert _resolve_backend("api") == "api"
+
+    def test_auto_with_codex_available_returns_codex(self, monkeypatch):
+        monkeypatch.setattr("generate_image._codex_subscription_available", lambda: True)
+        assert _resolve_backend("auto") == "codex"
+
+    def test_auto_without_codex_with_api_key_returns_api(self, monkeypatch):
+        monkeypatch.setattr("generate_image._codex_subscription_available", lambda: False)
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+        assert _resolve_backend("auto") == "api"
+
+    def test_auto_without_codex_without_api_key_returns_api(self, monkeypatch):
+        """codex も key も無い場合でも api を返し、後段の OpenAI() で native エラーに任せる"""
+        monkeypatch.setattr("generate_image._codex_subscription_available", lambda: False)
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        assert _resolve_backend("auto") == "api"
+
+
+class TestGenerateViaCodex:
+    """Codex backend 経由の生成ロジック。subprocess と画像探索をモックする"""
+
+    @patch("generate_image.subprocess.run")
+    def test_codex_subprocess_args_have_prompt_before_image(
+        self, mock_run, monkeypatch, tmp_path
+    ):
+        """`-i` は variadic で後続 positional を食う罠を回避するため、prompt は -i より前"""
+        # 生成画像をでっち上げ
+        fake_image = tmp_path / "ig_fake.png"
+        fake_image.write_bytes(base64.b64decode(DUMMY_PNG_B64))
+        monkeypatch.setattr(
+            "generate_image._find_latest_codex_image",
+            lambda since: fake_image,
+        )
+        mock_run.return_value = Mock(returncode=0, stdout="ok", stderr="")
+
+        ref = tmp_path / "ref.png"
+        ref.write_bytes(base64.b64decode(DUMMY_PNG_B64))
+
+        out_dir = tmp_path / "out"
+        result = generate_image(
+            prompt="add a red beret",
+            backend="codex",
+            output_dir=str(out_dir),
+            reference_images=[str(ref)],
+        )
+        assert result is not None
+
+        cmd = mock_run.call_args[0][0]
+        # prompt は positional の 1 つ、`-i` ペアより前にあること
+        assert "codex" in cmd[0]
+        assert "exec" in cmd
+        assert "-i" in cmd
+        i_idx = cmd.index("-i")
+        # `-i` の直前は引数フラグ系 (--sandbox の値) or プロンプト文字列。
+        # 重要なのはプロンプト文字列が `-i` より前にあること。
+        # -i の引数 (ref.png 絶対パス) は -i の直後
+        assert cmd[i_idx + 1] == str(ref)
+        # prompt が -i より前のどこかにある
+        prompt_indices = [k for k, v in enumerate(cmd) if "add a red beret" in v]
+        assert prompt_indices, "prompt not found in command"
+        assert max(prompt_indices) < i_idx
+
+    @patch("generate_image.subprocess.run")
+    def test_codex_includes_image_gen_directive_in_prompt(
+        self, mock_run, monkeypatch, tmp_path
+    ):
+        """API 経由を防ぐため『image_gen を直接使え』ディレクティブを必ず含める"""
+        fake = tmp_path / "ig_x.png"
+        fake.write_bytes(base64.b64decode(DUMMY_PNG_B64))
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: fake)
+        mock_run.return_value = Mock(returncode=0, stdout="", stderr="")
+
+        generate_image(
+            prompt="hello",
+            backend="codex",
+            output_dir=str(tmp_path / "out"),
+        )
+        cmd = mock_run.call_args[0][0]
+        # cmd の中に Codex agent 向けプロンプトがあり、そこに image_gen の指示が含まれる
+        joined = " ".join(cmd)
+        assert "image_gen" in joined
+
+    @patch("generate_image.subprocess.run")
+    def test_codex_copies_latest_image_to_output_path(
+        self, mock_run, monkeypatch, tmp_path
+    ):
+        fake = tmp_path / "ig_x.png"
+        fake.write_bytes(base64.b64decode(DUMMY_PNG_B64))
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: fake)
+        mock_run.return_value = Mock(returncode=0, stdout="", stderr="")
+
+        out_dir = tmp_path / "out"
+        result = generate_image(
+            prompt="hi",
+            backend="codex",
+            output_dir=str(out_dir),
+            output_format="png",
+            output_name="hero",
+        )
+        assert result is not None
+        copied = out_dir / "hero.png"
+        assert copied.exists()
+        assert copied.read_bytes() == fake.read_bytes()
+        assert str(copied) == result
+
+    @patch("generate_image.subprocess.run")
+    def test_codex_metadata_records_backend_codex(
+        self, mock_run, monkeypatch, tmp_path
+    ):
+        fake = tmp_path / "ig_x.png"
+        fake.write_bytes(base64.b64decode(DUMMY_PNG_B64))
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: fake)
+        mock_run.return_value = Mock(returncode=0, stdout="", stderr="")
+
+        out_dir = tmp_path / "out"
+        result = generate_image(
+            prompt="x", backend="codex", output_dir=str(out_dir), output_name="z"
+        )
+        meta_path = Path(result + ".json")
+        assert meta_path.exists()
+        meta = json.loads(meta_path.read_text())
+        assert meta["backend"] == "codex"
+        assert meta["prompt"] == "x"
+
+    @patch("generate_image.subprocess.run")
+    def test_codex_returns_none_when_no_image_found(
+        self, mock_run, monkeypatch, tmp_path
+    ):
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: None)
+        mock_run.return_value = Mock(returncode=0, stdout="", stderr="")
+        result = generate_image(
+            prompt="x", backend="codex", output_dir=str(tmp_path / "out")
+        )
+        assert result is None
+
+    @patch("generate_image.subprocess.run")
+    def test_codex_returns_none_when_subprocess_nonzero(
+        self, mock_run, monkeypatch, tmp_path
+    ):
+        mock_run.return_value = Mock(returncode=1, stdout="", stderr="boom")
+        result = generate_image(
+            prompt="x", backend="codex", output_dir=str(tmp_path / "out")
+        )
+        assert result is None
+
+
+class TestBackendDispatch:
+    """auto / api / codex 切替時に正しい経路に行くか"""
+
+    @patch("generate_image.subprocess.run")
+    @patch("generate_image.OpenAI")
+    def test_explicit_codex_does_not_call_openai(
+        self, mock_openai_cls, mock_run, monkeypatch, tmp_path
+    ):
+        fake = tmp_path / "ig_x.png"
+        fake.write_bytes(base64.b64decode(DUMMY_PNG_B64))
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: fake)
+        mock_run.return_value = Mock(returncode=0, stdout="", stderr="")
+        generate_image(
+            prompt="x", backend="codex", output_dir=str(tmp_path / "out")
+        )
+        mock_openai_cls.assert_not_called()
+
+    @patch("generate_image.subprocess.run")
+    @patch("generate_image.OpenAI")
+    def test_explicit_api_does_not_call_codex(
+        self, mock_openai_cls, mock_run, tmp_path
+    ):
+        client = Mock()
+        mock_openai_cls.return_value = client
+        client.images.generate.return_value = _make_image_response()
+        generate_image(
+            prompt="x", backend="api", output_dir=str(tmp_path / "out")
+        )
+        mock_run.assert_not_called()
+        client.images.generate.assert_called_once()
+
+    @patch("generate_image.subprocess.run")
+    @patch("generate_image.OpenAI")
+    def test_auto_with_codex_available_uses_codex_first(
+        self, mock_openai_cls, mock_run, monkeypatch, tmp_path
+    ):
+        monkeypatch.setattr("generate_image._codex_subscription_available", lambda: True)
+        fake = tmp_path / "ig_x.png"
+        fake.write_bytes(base64.b64decode(DUMMY_PNG_B64))
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: fake)
+        mock_run.return_value = Mock(returncode=0, stdout="", stderr="")
+
+        generate_image(
+            prompt="x", backend="auto", output_dir=str(tmp_path / "out")
+        )
+        mock_run.assert_called_once()
+        mock_openai_cls.assert_not_called()
+
+
+class TestBackendFallback:
+    """Codex が失敗したら API にフォールバック(auto モードかつ key あり)"""
+
+    @patch("generate_image.subprocess.run")
+    @patch("generate_image.OpenAI")
+    def test_auto_falls_back_to_api_when_codex_fails(
+        self, mock_openai_cls, mock_run, monkeypatch, tmp_path, capsys
+    ):
+        monkeypatch.setattr("generate_image._codex_subscription_available", lambda: True)
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: None)
+        mock_run.return_value = Mock(returncode=1, stdout="", stderr="rate limit")
+        client = Mock()
+        mock_openai_cls.return_value = client
+        client.images.generate.return_value = _make_image_response()
+
+        result = generate_image(
+            prompt="x", backend="auto", output_dir=str(tmp_path / "out")
+        )
+        assert result is not None
+        client.images.generate.assert_called_once()
+        out = capsys.readouterr().out
+        assert "fallback" in out.lower() or "フォールバック" in out
+
+    @patch("generate_image.subprocess.run")
+    @patch("generate_image.OpenAI")
+    def test_explicit_codex_does_not_fallback(
+        self, mock_openai_cls, mock_run, monkeypatch, tmp_path
+    ):
+        """`--backend codex` 明示時はフォールバックしない(意図的選択を尊重)"""
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: None)
+        mock_run.return_value = Mock(returncode=1, stdout="", stderr="boom")
+        result = generate_image(
+            prompt="x", backend="codex", output_dir=str(tmp_path / "out")
+        )
+        assert result is None
+        mock_openai_cls.assert_not_called()
