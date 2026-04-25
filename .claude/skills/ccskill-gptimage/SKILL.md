@@ -19,8 +19,10 @@ Generates and edits images via OpenAI gpt-image-2. **The user only describes int
   ```bash
   export CCSKILL_GPTIMAGE_DIR="$HOME/projects/ccskill-gptimage"
   ```
-- `OPENAI_API_KEY` must be set (or put into `$CCSKILL_GPTIMAGE_DIR/.env`)
-- **The OpenAI Organization must be Verified** (unverified orgs get 403)
+- **At least one backend must be available:**
+  - **Codex CLI** (recommended for ChatGPT subscribers): `brew install codex` + `codex login`. No API key, no extra billing.
+  - **OpenAI API key**: set `OPENAI_API_KEY` (env or `$CCSKILL_GPTIMAGE_DIR/.env`). Your **Organization must be Verified** (unverified orgs get 403).
+- Default `--backend auto` prefers Codex, falls back to API on failure. Force a specific path with `--backend codex` or `--backend api`.
 
 ## Usage
 
@@ -44,6 +46,7 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py "p
 | `--input-fidelity` | Not needed for gpt-image-2 (auto max). Only for `gpt-image-1.5` | none | `high` / `low` |
 | `--moderation` | Moderation level | `auto` | `auto` / `low` |
 | `--model` | Model ID | `gpt-image-2` | any model ID |
+| `--backend` | Generation backend | `auto` | `auto` (Codex preferred, API fallback) / `codex` (force Codex CLI) / `api` (force OpenAI API) |
 
 ### Quick examples
 
@@ -195,6 +198,27 @@ Mask creation is **outside this skill's scope** — produce the mask using your 
 #### Real-world validation
 
 Replacing a small ambiguous foreground object (a Japanese ceramic chopstick rest that gpt-image-2 kept misinterpreting as fork prongs in 4 successive `--reference`-only edits) was visibly improved by adding `--mask` over that region. Result was not perfect but moved clearly toward the intended ceramic shape — confirming masks are useful for **breaking through stubborn interpretation bias on small regions**, even if not pixel-precise.
+
+---
+
+## Backend selection (`--backend`)
+
+Two transports reach the same `gpt-image-2` model. Pick automatically (`auto`) or pin one.
+
+| Backend | When to use | Cost | Caveats |
+|---|---|---|---|
+| `codex` | ChatGPT subscriber with Codex CLI installed | Subscription quota (no extra billing) | Pixel-exact `--size` not guaranteed (agent-mediated); `--mask` not supported |
+| `api` | Has `OPENAI_API_KEY` + Verified Organization | Pay-as-you-go ($0.006–$0.211/image) | All parameters honored exactly |
+| `auto` (default) | Either or both | Codex first, then API | Falls back to API if Codex fails *and* `OPENAI_API_KEY` is present |
+
+When the user has *both* available, prefer `auto` — Codex saves money, API catches anything Codex can't do.
+
+**Force `--backend api` when**:
+- `--mask` is needed (Codex can't pass masks)
+- Pixel-exact `--size` is required (Codex's image_gen tool may return slightly different dimensions)
+- Strict reproducibility is needed (Codex's agentic layer adds non-determinism)
+
+Cost optimization advice (below) applies to **both** backends — the pricing difference is *who pays* (you per-image vs. ChatGPT subscription quota), not the model behavior.
 
 ---
 

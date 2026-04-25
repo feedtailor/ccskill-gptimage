@@ -36,10 +36,22 @@ A handful of one-shot examples, all generated at `--quality high` with **no rege
 
 ## Setup
 
-### Requirements
+### Requirements (two options)
 
+This skill works if either backend is available:
+
+**Option A: ChatGPT subscription + Codex CLI (recommended — no API key needed)**
 - **Python 3.10+**
-- **OpenAI Organization Verification completed** (otherwise 403)
+- **ChatGPT subscription** (Plus or higher)
+- **[Codex CLI](https://github.com/openai/codex) installed and `codex login` completed**
+- → No API key, no extra billing (covered by your subscription quota)
+
+**Option B: OpenAI API key (classic)**
+- **Python 3.10+**
+- **OpenAI API key** + **Organization Verification completed** (otherwise 403)
+- → Pay-as-you-go (a few cents to tens of cents per image)
+
+If both are available, `--backend auto` (default) prefers Codex and falls back to API on failure.
 
 ### 1. Clone
 
@@ -49,13 +61,26 @@ git clone https://github.com/feedtailor/ccskill-gptimage.git
 cd ccskill-gptimage
 ```
 
-### 2. Get API key
+### 2. Set up your backend
+
+**Option A (Codex CLI):**
+
+```bash
+# Install Codex CLI (Homebrew)
+brew install codex
+# Log in with your ChatGPT account
+codex login
+# Verify: should print OK if tokens.access_token is present
+cat ~/.codex/auth.json | python -c "import sys,json;print('OK' if json.load(sys.stdin).get('tokens',{}).get('access_token') else 'NG')"
+```
+
+**Option B (API key):**
 
 1. Issue a key at [OpenAI Platform](https://platform.openai.com/api-keys)
 2. Confirm your Organization is **Verified** (Settings → General → Verifications)
 3. Billing must be enabled (`gpt-image-2` has no free tier)
 
-### 3. Configure environment
+### 3. Configure environment (Option B only)
 
 ```bash
 cp .env.example .env
@@ -104,6 +129,7 @@ python generate_image.py "a coastal sunset"
 | `--mask` | Mask image (transparent area = editable) | none |
 | `--input-fidelity` | Not needed for gpt-image-2 (always max fidelity). For `gpt-image-1.5` only | none |
 | `--moderation` | Moderation (`auto`/`low`) | `auto` |
+| `--backend` | Generation backend (`auto`/`codex`/`api`). `auto` prefers Codex, falls back to API on failure | `auto` |
 
 ### Examples
 
