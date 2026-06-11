@@ -17,6 +17,7 @@ import base64
 import contextlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -45,7 +46,15 @@ OUTPUT_FORMAT_TO_EXT = {
     "webp": ".webp",
 }
 
-SIZE_CHOICES = ["auto", "1024x1024", "1024x1536", "1536x1024"]
+SIZE_CHOICES = ["auto", "1024x1024", "1024x1536", "1536x1024"]  # よく使う例(enum 強制ではない)
+
+# gpt-image-2 のサイズ制約(出典: gpt-image-2 サイズ仕様 / issue #018 で実証)
+SIZE_MULTIPLE = 16
+SIZE_MAX_SIDE = 3840
+SIZE_MAX_ASPECT = 3.0
+SIZE_MIN_PIXELS = 655_360
+SIZE_MAX_PIXELS = 8_294_400
+
 QUALITY_CHOICES = ["auto", "low", "medium", "high"]
 BACKGROUND_CHOICES = ["auto", "transparent", "opaque"]
 OUTPUT_FORMAT_CHOICES = ["png", "jpeg", "webp"]
@@ -59,6 +68,51 @@ CODEX_GENERATED_DIR = CODEX_HOME / "generated_images"
 CODEX_SUBPROCESS_TIMEOUT = 300
 
 
+def validate_size(size: str) -> tuple[int, int]:
+    """`WxH` 文字列を gpt-image-2 のサイズ制約で検証し (幅, 高さ) を返す。
+
+    違反時は具体的な日本語メッセージ付きの ValueError を送出する。
+    `auto` は呼び出し側で別扱いする前提(本関数には渡さない)。
+
+    制約(出典: gpt-image-2 サイズ仕様、issue #018 で実証):
+      1. 各辺が 16 の倍数
+      2. 最大辺 <= 3840px
+      3. アスペクト比(長辺/短辺) <= 3:1
+      4. 総ピクセル数が 655,360 <= W*H <= 8,294,400
+    """
+    m = re.fullmatch(r"(\d+)x(\d+)", size.strip())
+    if not m:
+        raise ValueError(
+            f"--size は 'WxH'(例: 1024x1024)または 'auto' で指定してください: {size!r} は不正な形式です"
+        )
+    w, h = int(m.group(1)), int(m.group(2))
+    if w % SIZE_MULTIPLE != 0 or h % SIZE_MULTIPLE != 0:
+        bad = w if w % SIZE_MULTIPLE != 0 else h
+        raise ValueError(
+            f"各辺は {SIZE_MULTIPLE} の倍数にしてください: {bad} は {SIZE_MULTIPLE} の倍数ではありません(指定: {w}x{h})"
+        )
+    if max(w, h) > SIZE_MAX_SIDE:
+        raise ValueError(
+            f"最大辺は {SIZE_MAX_SIDE}px 以下にしてください: {max(w, h)} は上限を超えています(指定: {w}x{h})"
+        )
+    long_side, short_side = max(w, h), min(w, h)
+    aspect = long_side / short_side
+    if aspect > SIZE_MAX_ASPECT:
+        raise ValueError(
+            f"アスペクト比は 3:1 以下にしてください: {w}x{h} は {aspect:.2f}:1 です"
+        )
+    total = w * h
+    if total < SIZE_MIN_PIXELS:
+        raise ValueError(
+            f"総ピクセル数は {SIZE_MIN_PIXELS:,} 以上にしてください: {w}x{h} = {total:,} は下限を下回ります"
+        )
+    if total > SIZE_MAX_PIXELS:
+        raise ValueError(
+            f"総ピクセル数は {SIZE_MAX_PIXELS:,} 以下にしてください: {w}x{h} = {total:,} は上限を超えています"
+        )
+    return (w, h)
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="OpenAI gpt-image-2 で画像を生成・編集します"
@@ -68,8 +122,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--size",
         type=str,
         default=DEFAULT_SIZE,
-        choices=SIZE_CHOICES,
-        help=f"出力サイズ (デフォルト: {DEFAULT_SIZE})",
+        help=(
+            f"出力サイズ。'auto' または 'WxH'(例: {DEFAULT_SIZE}, 3840x2160)。"
+            f" 制約: 各辺 {SIZE_MULTIPLE} の倍数 / 最大辺 {SIZE_MAX_SIDE}px /"
+            f" アスペクト比 3:1 以下 / 総ピクセル {SIZE_MIN_PIXELS:,}〜{SIZE_MAX_PIXELS:,}。"
+            " よく使う例: " + " ".join(s for s in SIZE_CHOICES if s != "auto")
+        ),
     )
     parser.add_argument(
         "--quality",
@@ -435,6 +493,13 @@ def generate_image(
         print(f"[Error] マスク画像が見つかりません: {mask}")
         return None
 
+    if size != "auto":
+        try:
+            validate_size(size)
+        except ValueError as e:
+            print(f"[Error] {e}")
+            return None
+
     effective_backend = _resolve_backend(backend)
 
     if effective_backend == "codex":
@@ -451,6 +516,11 @@ def generate_image(
                 return None
 
     if effective_backend == "codex":
+        if size != "auto":
+            print(
+                "[Warning] Codex backend ではサイズが保証されません(agent 経由で非決定的)。"
+                " 厳密な --size が必要なら --backend api を使ってください"
+            )
         output_path = get_output_path(output_dir, output_format, name=output_name)
         codex_result = _generate_via_codex(
             prompt,
@@ -611,6 +681,13 @@ def main():
             " --input-fidelity の指定は不要なため省略します(API エラーを回避)"
         )
         args.input_fidelity = None
+
+    if args.size != "auto":
+        try:
+            validate_size(args.size)
+        except ValueError as e:
+            print(f"[Error] {e}")
+            sys.exit(2)
 
     try:
         result = generate_image(

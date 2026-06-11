@@ -28,6 +28,7 @@ from generate_image import (
     get_output_path,
     main,
     parse_args,
+    validate_size,
 )
 
 
@@ -807,3 +808,131 @@ class TestBackendFallback:
         )
         assert result is None
         mock_openai_cls.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# Free-form --size validation (issue #018)
+# ---------------------------------------------------------------------------
+
+
+class TestValidateSize:
+    """validate_size() の境界値挙動。4 制約(16 の倍数 / 最大辺 3840 / 3:1 / 総ピクセル)"""
+
+    # --- 合格ケース ---
+    def test_legacy_square_passes(self):
+        assert validate_size("1024x1024") == (1024, 1024)
+
+    def test_legacy_portrait_passes(self):
+        assert validate_size("1024x1536") == (1024, 1536)
+
+    def test_legacy_landscape_passes(self):
+        assert validate_size("1536x1024") == (1536, 1024)
+
+    def test_4k_landscape_upper_bound_passes(self):
+        """3840x2160 = 8,294,400 = 総ピクセル上限ちょうど"""
+        assert validate_size("3840x2160") == (3840, 2160)
+
+    def test_4k_portrait_passes(self):
+        assert validate_size("2160x3840") == (2160, 3840)
+
+    def test_total_pixels_lower_bound_passes(self):
+        """1024x640 = 655,360 = 総ピクセル下限ちょうど"""
+        assert validate_size("1024x640") == (1024, 640)
+
+    def test_aspect_ratio_exactly_3to1_passes(self):
+        """3:1 ちょうどは許容(> 3.0 のみ弾く)。1536x512 = 3.0:1, total=786,432"""
+        assert validate_size("1536x512") == (1536, 512)
+
+    # --- 違反ケース ---
+    def test_non_wxh_format_raises(self):
+        with pytest.raises(ValueError):
+            validate_size("1024")
+
+    def test_garbage_format_raises(self):
+        with pytest.raises(ValueError):
+            validate_size("abc")
+
+    def test_not_multiple_of_16_raises(self):
+        with pytest.raises(ValueError, match="16"):
+            validate_size("1000x1000")
+
+    def test_height_not_multiple_of_16_raises(self):
+        with pytest.raises(ValueError, match="16"):
+            validate_size("1024x1000")
+
+    def test_max_side_over_3840_raises(self):
+        with pytest.raises(ValueError, match="3840"):
+            validate_size("4096x1024")
+
+    def test_aspect_ratio_over_3to1_raises(self):
+        """3840x1024 = 3.75:1"""
+        with pytest.raises(ValueError, match="3:1|アスペクト"):
+            validate_size("3840x1024")
+
+    def test_total_pixels_below_lower_bound_raises(self):
+        """512x512 = 262,144 < 655,360"""
+        with pytest.raises(ValueError, match="655,360|総ピクセル"):
+            validate_size("512x512")
+
+    def test_total_pixels_above_upper_bound_raises(self):
+        """3840x2176 = 8,355,840 > 8,294,400(16 の倍数・最大辺・比は OK)"""
+        with pytest.raises(ValueError, match="8,294,400|総ピクセル"):
+            validate_size("3840x2176")
+
+
+class TestSizeFreeInputParsing:
+    """argparse が choices で弾かず、任意 WxH を受け取れること"""
+
+    def test_arbitrary_size_accepted_by_parser(self):
+        args = parse_args(["p", "--size", "3840x2160"])
+        assert args.size == "3840x2160"
+
+    def test_legacy_size_still_accepted(self):
+        args = parse_args(["p", "--size", "1024x1536"])
+        assert args.size == "1024x1536"
+
+    def test_auto_still_accepted(self):
+        args = parse_args(["p", "--size", "auto"])
+        assert args.size == "auto"
+
+
+class TestSizeValidationIntegration:
+    """main() / generate_image() へのバリデーション統合"""
+
+    def _run_main(self, argv: list[str]) -> int | None:
+        with patch.object(sys, "argv", ["generate_image.py", *argv]):
+            try:
+                main()
+            except SystemExit as e:
+                return e.code
+        return None
+
+    def test_main_rejects_invalid_size_exit_2(self, capsys):
+        code = self._run_main(["p", "--size", "1000x1000"])
+        assert code == 2
+        assert "16" in capsys.readouterr().out
+
+    @patch("generate_image.generate_image")
+    def test_main_passes_valid_4k_through(self, mock_gen):
+        mock_gen.return_value = "/tmp/fake.png"
+        code = self._run_main(["p", "--size", "3840x2160", "--backend", "api"])
+        assert code is None
+        assert mock_gen.call_args.kwargs["size"] == "3840x2160"
+
+    def test_generate_image_returns_none_on_invalid_size(self, capsys):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = generate_image(prompt="x", size="1000x1000", output_dir=tmp, backend="api")
+        assert result is None
+        assert "16" in capsys.readouterr().out
+
+    @patch("generate_image.subprocess.run")
+    def test_codex_warns_size_not_guaranteed(self, mock_run, monkeypatch, tmp_path, capsys):
+        fake = tmp_path / "ig_x.png"
+        fake.write_bytes(base64.b64decode(DUMMY_PNG_B64))
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: fake)
+        mock_run.return_value = Mock(returncode=0, stdout="", stderr="")
+        generate_image(
+            prompt="x", size="3840x2160", backend="codex", output_dir=str(tmp_path / "out")
+        )
+        out = capsys.readouterr().out
+        assert "Codex" in out and ("保証" in out or "warn" in out.lower())
