@@ -1,28 +1,28 @@
 # Infographics / Diagrams / Slides & Charts
 
-Cookbook 4.1, 4.9, 4.10 を統合。**密集レイアウト・画像内の多いテキスト**が共通特徴で、`quality=high` が推奨される用途群。
+Combines Cookbook 4.1, 4.9, and 4.10. The shared trait is **dense layout and heavy in-image text**, a category where `quality=high` is recommended.
 
-## 使い所
+## When to use
 
-- 技術フロー図(仕組みを視覚と文章で説明)
-- 科学・教育用の概念図(学習教材)
-- 事業スライド(ピッチデッキ、ダッシュボード、KPI パネル)
-- データ可視化(TAM/SAM/SOM、棒グラフ、タイムライン)
+- Technical flow diagrams (explaining a mechanism with both visuals and text)
+- Conceptual diagrams for science/education (learning material)
+- Business slides (pitch decks, dashboards, KPI panels)
+- Data visualization (TAM/SAM/SOM, bar charts, timelines)
 
-## 共通設計原則(Cookbook 引用)
+## Core principles (Cookbook quotes)
 
 > "Use infographics to explain structured information for a specific audience: students, executives, customers, or the general public."
 > "For dense layouts or heavy in-image text, it's recommended to set output generation quality to 'high'."
 > — [Cookbook 4.1](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
 
-**重要な書き方のコツ**:
-- 対象オーディエンス(学生/経営層/一般/子供)をプロンプト冒頭に含める
-- 具体的なデータ値(例: `TAM: $42B`)を**プロンプトに直接書き込む** — モデルが自動で数値を決めるとブレる
-- 除外したい装飾を Constraints で明示(例: `Avoid clip art, stock photography, gradients, shadows, decorative elements`)
+**Key tips**:
+- Include the target audience (students/executives/general public/children) at the start of the prompt
+- Write specific data values (e.g. `TAM: $42B`) **directly into the prompt** — letting the model invent the numbers makes them drift
+- State the decorations you want excluded in Constraints (e.g. `Avoid clip art, stock photography, gradients, shadows, decorative elements`)
 
 ---
 
-## プロンプト例 1: 機械の仕組みを説明する技術インフォグラフィック(Cookbook 4.1)
+## Prompt example 1: Technical infographic explaining how a machine works (Cookbook 4.1)
 
 ```
 Create a detailed Infographic of the functioning and flow of an automatic coffee machine like a Jura.
@@ -30,9 +30,9 @@ From bean basket, to grinding, to scale, water tank, boiler, etc.
 I'd like to understand technically and visually the flow.
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`(密集するなら `high`)
+**Parameters**: `size=1024x1536`, `quality=medium` (use `high` if the layout is dense)
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Create a detailed Infographic of the functioning and flow of an automatic coffee machine like a Jura. From bean basket, to grinding, to scale, water tank, boiler, etc. I'd like to understand technically and visually the flow." \
@@ -41,7 +41,7 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## プロンプト例 2: 学習用の科学図(Cookbook 4.9)
+## Prompt example 2: Scientific diagram for learning (Cookbook 4.9)
 
 ```
 Create a simple biology diagram titled "Cellular Respiration at a Glance" for high school students.
@@ -53,11 +53,11 @@ Make it look like a clean classroom handout or slide, with a white background, s
 Avoid tiny text, extra decoration, or anything that makes the diagram hard to understand.
 ```
 
-**パラメータ**: `size=1536x1024`, `quality=high`(小さなラベル密集のため必須)
+**Parameters**: `size=1536x1024`, `quality=high` (required because of the dense small labels)
 
 ---
 
-## プロンプト例 3: ピッチデッキ 1 スライド(Cookbook 4.10)
+## Prompt example 3: A single pitch-deck slide (Cookbook 4.10)
 
 ```
 Create one pitch-deck slide titled **"Market Opportunity"** that feels like a real Series A fundraising slide from a YC-backed startup.
@@ -79,15 +79,15 @@ The design should look like it belongs in a deck that actually raised money: hig
 Avoid clip art, stock photography, gradients, shadows, decorative elements, or anything that feels generic or overdesigned.
 ```
 
-**パラメータ**: `size=1536x864`, `quality=high`
+**Parameters**: `size=1536x864`, `quality=high`
 
-> **注意**: `1536x864` は現 `generate_image.py` の `SIZE_CHOICES` に無い。近い代替は `1536x1024`(16:10)。Cookbook と厳密に揃えたい場合は別 issue で choices 拡張を検討。
+> **Note**: `1536x864` is not in the current `SIZE_CHOICES` of `generate_image.py`. The closest alternative is `1536x1024` (16:10). If you need to match the Cookbook exactly, consider expanding the choices in a separate issue.
 
 ---
 
-## 日本語テキストを含むインフォグラフィック
+## Infographics containing Japanese text
 
-gpt-image-2 は日本語漢字・かなの描画が強い。SKILL で紹介している `14_tategaki` 作例の系統。
+gpt-image-2 is strong at rendering Japanese kanji and kana — the same lineage as the `14_tategaki` example shown in SKILL.
 
 ```
 Create a clean bilingual infographic titled "DMARC の仕組み" for a Japanese SaaS audience.
@@ -99,14 +99,14 @@ Avoid watermarks, logos, or stock imagery.
 
 ---
 
-## gpt-image-2 固有の注意
+## gpt-image-2-specific notes
 
-- **`quality=high` がコスト的に見合う局面**。密なテキストで `medium` だと潰れやすい
-- 縦長(`1024x1536`)の `high` は $0.165、正方形 `high` より安い — ポートレート型インフォグラフィックはむしろ縦長が得
-- Constraint 節は必ず書く(`Avoid clip art, stock photography, gradients, ...` のようなパターンが公式推奨)
+- **A situation where `quality=high` is worth the cost.** With dense text, `medium` tends to collapse
+- Portrait (`1024x1536`) at `high` is $0.165, cheaper than square `high` — portrait-oriented infographics are actually a better deal in portrait
+- Always write a Constraints section (patterns like `Avoid clip art, stock photography, gradients, ...` are officially recommended)
 
-## 出典
+## Source
 
 - Cookbook 4.1 Infographics / 4.9 Scientific-Educational / 4.10 Slides Diagrams Charts
 - URL: https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
-- 取得日: 2026-04-23
+- Retrieved: 2026-04-23

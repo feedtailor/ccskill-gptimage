@@ -1,48 +1,48 @@
-# prompts/ — ユースケース別プロンプト集
+# prompts/ — Use-case prompt collection
 
-このディレクトリは OpenAI Cookbook [GPT Image Generation Models Prompting Guide](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide) の 23 ユースケースを、**近い用途で統合した 14 ファイル**に整理したもの。
+This directory organizes the 23 use cases from the OpenAI Cookbook [GPT Image Generation Models Prompting Guide](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide) into **14 files consolidated by related use case**.
 
-## 使い方(Claude 向け)
+## Usage (for Claude)
 
-`SKILL.md` で大まかなユースケースを特定したら、該当ファイルを Read して**完成プロンプトのテンプレート + パラメータ + gpt-image-2 固有の注意**を取り込み、ユーザーの意図に合わせて合成する。
+Once you have identified the rough use case in `SKILL.md`, Read the relevant file to pull in the **finished prompt template + parameters + gpt-image-2-specific notes**, and compose it to match the user's intent.
 
-各ファイルは progressive disclosure を前提に**必要時のみロードされる想定**なので、全部を暗記する必要はない。
+Each file is meant to be **loaded only when needed** on a progressive-disclosure basis, so there is no need to memorize all of them.
 
-## インデックス
+## Index
 
-### 生成(text → image)
+### Generation (text → image)
 
-| ファイル | 扱うユースケース | Cookbook 節 |
+| File | Use cases covered | Cookbook section |
 |---|---|---|
-| [infographics-and-diagrams.md](infographics-and-diagrams.md) | インフォグラフィック / 概念図 / 科学・教育図 / スライド・チャート | 4.1, 4.9, 4.10 |
-| [photorealism.md](photorealism.md) | ナチュラルな写真表現 / 歴史・文脈のある場面 | 4.3, 4.4 |
-| [logo.md](logo.md) | ブランドロゴ / 変種生成(`n`) | 4.5 |
-| [ads-and-marketing.md](ads-and-marketing.md) | 広告ビジュアル / 画像内の完全一致テキスト | 4.6, 5.5 |
-| [comic-and-storyboard.md](comic-and-storyboard.md) | コミック / パネル構成 / ストーリーボード | 4.7 |
-| [ui-mockups.md](ui-mockups.md) | モバイル/Web アプリ UI モックアップ | 4.8 |
-| [character-and-concept.md](character-and-concept.md) | キャラクター一貫性 / ホリデーカード / 玩具パッケージ | 6.2, 6.3, 6.4 |
-| [cultural-atmosphere.md](cultural-atmosphere.md) | 文化圏の雰囲気(日本語看板・街並み) | Sec.2 + 実証(#015) |
+| [infographics-and-diagrams.md](infographics-and-diagrams.md) | Infographics / concept diagrams / science & education diagrams / slides & charts | 4.1, 4.9, 4.10 |
+| [photorealism.md](photorealism.md) | Natural photographic rendering / scenes with historical context | 4.3, 4.4 |
+| [logo.md](logo.md) | Brand logos / variant generation (`n`) | 4.5 |
+| [ads-and-marketing.md](ads-and-marketing.md) | Ad visuals / exact-match text in images | 4.6, 5.5 |
+| [comic-and-storyboard.md](comic-and-storyboard.md) | Comics / panel layout / storyboards | 4.7 |
+| [ui-mockups.md](ui-mockups.md) | Mobile/Web app UI mockups | 4.8 |
+| [character-and-concept.md](character-and-concept.md) | Character consistency / holiday cards / toy packaging | 6.2, 6.3, 6.4 |
+| [cultural-atmosphere.md](cultural-atmosphere.md) | Cultural atmosphere (Japanese signage and streetscapes) | Sec.2 + verified (#015) |
 
-### 編集(text + image → image)
+### Editing (text + image → image)
 
-| ファイル | 扱うユースケース | Cookbook 節 |
+| File | Use cases covered | Cookbook section |
 |---|---|---|
-| [image-translation.md](image-translation.md) | 画像内テキストの多言語翻訳 | 4.2 |
-| [style-transfer.md](style-transfer.md) | 参照画像のスタイルを別コンテンツに適用 | 5.1 |
-| [try-on.md](try-on.md) | 人物の服装変更(アイデンティティ保持) | 5.2 |
-| [sketch-to-render.md](sketch-to-render.md) | 手描きスケッチ → 写真リアル | 5.3 |
-| [product-mockup.md](product-mockup.md) | 商品抽出・背景除去 / インテリアの精密置換 | 5.4, 6.1 |
-| [scene-transform.md](scene-transform.md) | 天候・時間帯変更 / オブジェクト削除 | 5.6, 5.7 |
-| [scene-composite.md](scene-composite.md) | 人物を新シーンへ / 複数画像合成 | 5.8, 5.9 |
+| [image-translation.md](image-translation.md) | Multilingual translation of in-image text | 4.2 |
+| [style-transfer.md](style-transfer.md) | Apply a reference image's style to different content | 5.1 |
+| [try-on.md](try-on.md) | Change a person's clothing (identity preserved) | 5.2 |
+| [sketch-to-render.md](sketch-to-render.md) | Hand-drawn sketch → photorealistic | 5.3 |
+| [product-mockup.md](product-mockup.md) | Product extraction & background removal / precise interior replacement | 5.4, 6.1 |
+| [scene-transform.md](scene-transform.md) | Weather & time-of-day change / object removal | 5.6, 5.7 |
+| [scene-composite.md](scene-composite.md) | Person into a new scene / multi-image compositing | 5.8, 5.9 |
 
-## すべてのファイルに共通する注意
+## Notes common to all files
 
-1. **Cookbook 原文プロンプトはそのまま転記**(出典: Cookbook + 取得日 2026-04-23)。英語のまま使用可、あるいは日本語意図を混ぜても可
-2. **Cookbook に `input_fidelity=high` が出現する場合がある** が、gpt-image-2 では自動最大忠実度のため**指定不可(400 エラー)**。本スキル側は `generate_image.py` の main validation で自動削除するが、プロンプト組み立て時に明示的に付けないこと
-3. **`background: transparent` は gpt-image-2 非対応**。透過が必要なら (a) `--model gpt-image-1.5` に切替、(b) rembg 後処理、(c) `ccskill-nanobanana` に切替
-4. **コスト罠**: `1024×1536` (縦長) の `high` は **$0.165** で、`1024×1024` の `high` ($0.211) より安い
-5. 編集経路(`--reference` 指定)は**常に全画面再描画**される(マスクは guidance only、公式 Cookbook 明示)。ピクセル単位の保持が必要なら Pillow 等でクロップ → 編集 → 貼り戻しのハイブリッド
+1. **These prompt guides are written in English**: prose is in English, and the prompt examples are in English as they are sent to the model (source: Cookbook + retrieved 2026-04-23).
+2. **`input_fidelity=high` may appear in the Cookbook**, but with gpt-image-2 it **cannot be specified (400 error)** due to automatic maximum fidelity. This skill strips it automatically in the main validation of `generate_image.py`, but do not add it explicitly when composing prompts.
+3. **`background: transparent` is unsupported by gpt-image-2**. If you need transparency, (a) switch to `--model gpt-image-1.5`, (b) post-process with rembg, or (c) switch to `ccskill-nanobanana`.
+4. **Cost gotcha**: `1024×1536` (portrait) at `high` is **$0.165**, cheaper than `1024×1024` at `high` ($0.211).
+5. The edit path (specifying `--reference`) is **always a full-canvas redraw** (the mask is guidance only, as the official Cookbook states). If pixel-level preservation is required, use a Pillow-style hybrid of crop → edit → paste back.
 
-## 出典
+## Source
 
-すべてのプロンプト例は OpenAI Cookbook "GPT Image Generation Models Prompting Guide" からの引用。出典 URL は各ファイルの該当プロンプト直下に明記している。
+All prompt examples are quoted from the OpenAI Cookbook "GPT Image Generation Models Prompting Guide." The source URL is noted directly below the relevant prompt in each file.

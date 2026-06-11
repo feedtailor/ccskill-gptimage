@@ -1,27 +1,27 @@
 # Sketch → Photorealistic Render
 
-Cookbook 5.3。ラフスケッチを写真的リアリズムに変換。**レイアウト・遠近法・プロポーションを保持**しながら、素材と光だけ写実化。
+Cookbook 5.3. Convert a rough sketch into photographic realism. **Preserve layout, perspective, and proportions** while making only the materials and light photorealistic.
 
-## 使い所
+## When to use
 
-- デザインスケッチの概念検証 (コンセプト → 写真ふう)
-- 建築・インテリアの手描きラフをフォトリアル化
-- 絵コンテ → 実写ビジュアライゼーション
-- 子供のお絵かきを写真化するおもしろ用途
+- Concept validation of design sketches (concept → photo-like)
+- Photorealizing hand-drawn architecture/interior roughs
+- Storyboard → live-action visualization
+- A fun use case: turning a child's drawing into a photo
 
-## Cookbook 引用
+## Cookbook quote
 
 > "Convert rough sketches into photorealistic images while preserving layout and perspective. Add realism through materials and lighting without introducing new elements."
 > — [Cookbook 5.3](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
 
-**書き方のコツ**:
-- **Preserve the exact layout, proportions, and perspective** を明示的に書く
-- 素材(materials)と照明(lighting)を指定する自由度を与える
-- **新要素の追加を禁止**: `Do not add new elements or text.`
+**Tips**:
+- Explicitly write **Preserve the exact layout, proportions, and perspective**.
+- Give freedom to specify materials and lighting.
+- **Forbid adding new elements**: `Do not add new elements or text.`
 
 ---
 
-## プロンプト例(Cookbook 5.3)
+## Prompt example (Cookbook 5.3)
 
 ```
 Turn this drawing into a photorealistic image.
@@ -30,9 +30,9 @@ Choose realistic materials and lighting consistent with the sketch intent.
 Do not add new elements or text.
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`、入力画像 1 枚(スケッチ)
+**Parameters**: `size=1024x1536`, `quality=medium`, 1 input image (sketch)
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Turn this drawing into a photorealistic image. Preserve the exact layout, proportions, and perspective. Choose realistic materials and lighting consistent with the sketch intent. Do not add new elements or text." \
@@ -41,9 +41,9 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## 応用: 素材・光・設定を少しヒント
+## Variation: hint at materials, light, and setting
 
-スケッチの意図をもっと具体的に伝えたい時:
+When you want to convey the sketch's intent more concretely:
 
 ```
 Turn this architectural sketch into a photorealistic rendering.
@@ -57,9 +57,9 @@ Do not add new furniture, people, or text that is not in the sketch.
 
 ---
 
-## 応用: 子供のお絵かき → 写実
+## Variation: child's drawing → photorealistic
 
-エンタメ用途(家族用ギフトなど)。Cookbook 本家にはないが、本スキル特有のおもしろ使い方。
+An entertainment use case (e.g., a family gift). Not in the original Cookbook, but a fun use specific to this skill.
 
 ```
 Turn this child's drawing of an imaginary creature into a photorealistic creature portrait.
@@ -71,16 +71,16 @@ No text, no watermarks.
 
 ---
 
-## gpt-image-2 固有の注意
+## gpt-image-2-specific notes
 
-- **自動最大忠実度**のおかげで「スケッチの構図・ライン」が強く保たれる(`input_fidelity` 指定は不要・エラー)
-- ただし edit 経路の常として**全画面再描画**されるため、細部のラインが 1 対 1 で一致するわけではない
-- スケッチが**薄い/雑**だと写実化の解釈余地が大きくなる。明度・コントラストが高いスケッチほど保持されやすい
-- 新要素を勝手に追加することがあるので `Do not add new elements or text.` は必ず入れる
-- `quality=high` が素材感の再現には効く
+- Thanks to **auto max fidelity**, the "sketch's composition and lines" are strongly preserved (`input_fidelity` not needed, and would error).
+- As always with the edit path, however, the **full canvas is re-rendered**, so fine lines won't match one-to-one.
+- A **faint/messy** sketch leaves more interpretive room for photorealization. The higher a sketch's brightness and contrast, the better it is preserved.
+- The model can add new elements on its own, so always include `Do not add new elements or text.`
+- `quality=high` helps reproduce the feel of materials.
 
-## 出典
+## Source
 
 - Cookbook 5.3 Drawing → Image (Rendering)
 - URL: https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
-- 取得日: 2026-04-23
+- Retrieved: 2026-04-23

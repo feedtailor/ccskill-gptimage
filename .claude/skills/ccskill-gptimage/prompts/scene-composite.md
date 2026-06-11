@@ -1,44 +1,44 @@
-# Scene Composite — 人物を新シーンへ / 複数画像合成
+# Scene Composite — Person into a new scene / multi-image compositing
 
-Cookbook 5.8(Insert the Person Into a Scene)と 5.9(Multi-Image Referencing and Compositing)を統合。**入力画像から要素を抽出して新シーンに合成**する用途。
+Combines Cookbook 5.8 (Insert the Person Into a Scene) and 5.9 (Multi-Image Referencing and Compositing). For **extracting elements from input images and compositing them into a new scene**.
 
-## 使い所
+## When to use
 
-- キャンペーン撮影(モデル写真 + 背景写真を合成)
-- ストーリーボード制作(人物を様々なロケに置く)
-- 製品とライフスタイル写真の合成
-- ペットとユーザーの写真合成
-- グループ写真の再構成
+- Campaign shoots (composite a model photo with a background photo)
+- Storyboard production (place a person in various locations)
+- Compositing products with lifestyle photos
+- Compositing photos of a pet with the user
+- Reconstructing group photos
 
-## Cookbook 引用
+## Cookbook quote
 
 ### 5.8 Insert Person Into Scene
 
-> 人物を新しいシーンに合成するワークフロー。ストーリーボードやキャンペーン制作で、人物の顔・アイデンティティを保持しながら背景や状況を変更する用途に適している。
+> A workflow for compositing a person into a new scene. Well suited to storyboards and campaign production, where you change the background or situation while preserving the person's face and identity.
 
 ### 5.9 Multi-Image Compositing
 
 > "Combines elements from multiple input images into a single believable composite—ideal for 'insert object/person into scene' workflows. Key is specifying what to transplant, where it goes, and what must remain unchanged while matching lighting, perspective, scale, and shadows."
 > — [Cookbook 5.8 / 5.9](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
 
-**共通原則**:
-- **何を移植するか、どこに置くか、何を保持するか**を明示
-- 光・遠近・スケール・影のマッチを要求(`match lighting, perspective, scale, shadows`)
-- 「貼り付け感」を排除: `avoid pasted-on appearance`
-- 背景・フレーミングの保持を明示
+**Core principles**:
+- State explicitly **what to transplant, where to place it, and what to preserve**
+- Demand matching of light, perspective, scale, and shadows (`match lighting, perspective, scale, shadows`)
+- Eliminate the "pasted-on look": `avoid pasted-on appearance`
+- Explicitly preserve the background and framing
 
-## Multi-Image Inputs の書き方(Cookbook Section 2)
+## How to write Multi-Image Inputs (Cookbook Section 2)
 
 > "Reference each input by **index and description** ('Image 1: product photo… Image 2: style reference…') and describe how they interact ('apply Image 2's style to Image 1'). When compositing, be explicit about which elements move where."
 
-**必須パターン**:
-- 各入力画像を `Image N: 説明` と**インデックス付きで定義**
-- どの要素がどの画像から来るかを**文中で指し示す**
-- 移植先の位置関係を具体的に(`right next to the woman`, `in the background behind the table`)
+**Required pattern**:
+- **Define each input image with an index** as `Image N: description`
+- **Point out in the text** which element comes from which image
+- Be concrete about the target placement (`right next to the woman`, `in the background behind the table`)
 
 ---
 
-## プロンプト例 1: 人物を新シーンに挿入(Cookbook 5.8)
+## Prompt example 1: Insert a person into a new scene (Cookbook 5.8)
 
 ```
 Generate a highly realistic action scene where this person is running away from a large, realistic brown bear attacking a campsite. The image should look like a real photograph someone could have taken, not an overly enhanced or cinematic movie-poster image.
@@ -46,11 +46,11 @@ She is centered in the image but looking away from the camera, wearing outdoorsy
 The campsite is in Yosemite National Park, with believable natural details. The time of day is dusk, with natural lighting and realistic colors. Everything should feel grounded, authentic, and unstyled, as if captured in a real moment. Avoid cinematic lighting, dramatic color grading, or stylized composition.
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`、入力画像 1 枚(人物ソース)
+**Parameters**: `size=1024x1536`, `quality=medium`, 1 input image (person source)
 
-> **注意**: Cookbook 原文は `input_fidelity="high"` を明記しているが、gpt-image-2 では**指定不可**(自動最大忠実度、本スキル main が自動除去)。
+> **Note**: The Cookbook original spells out `input_fidelity="high"`, but with gpt-image-2 it **cannot be specified** (automatic maximum fidelity; this skill's main strips it automatically).
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Generate a highly realistic action scene where this person is ..." \
@@ -59,15 +59,15 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## プロンプト例 2: 2 枚合成(Cookbook 5.9)
+## Prompt example 2: Two-image composite (Cookbook 5.9)
 
 ```
 Place the dog from the second image into the setting of image 1, right next to the woman, use the same style of lighting, composition and background. Do not change anything else.
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`、入力画像 2 枚
+**Parameters**: `size=1024x1536`, `quality=medium`, 2 input images
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Place the dog from the second image into the setting of image 1, right next to the woman, use the same style of lighting, composition and background. Do not change anything else." \
@@ -78,9 +78,9 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## 応用: 3 枚以上を明示インデックスで
+## Advanced: Three or more images with explicit indices
 
-Cookbook Section 2 の推奨パターン(index + description)。
+The recommended pattern from Cookbook Section 2 (index + description).
 
 ```
 Image 1: a dining room with a wooden table and warm evening lighting.
@@ -92,9 +92,9 @@ Do not change the dining room, the table, the window, or other existing objects.
 
 ---
 
-## 応用: 人物を別イベントに配置
+## Advanced: Place a person at a different event
 
-キャンペーン制作で同じモデルを複数ロケに置く。
+Place the same model in multiple locations for campaign production.
 
 ```
 Image 1: the model's reference portrait (studio shot).
@@ -105,16 +105,16 @@ No watermarks, no text.
 
 ---
 
-## gpt-image-2 固有の注意
+## gpt-image-2-specific notes
 
-- **最大 5 枚の参照画像**が実用上限。それ以上は文脈が散る
-- Cookbook が頻用する `input_fidelity="high"` は gpt-image-2 では**自動で効いている**ため指定不要
-- 合成時に **drift しやすい要素**: 人物の表情、小物の細部、背景の深度
-- 「貼り付け感」を避けるには、**影・光・色温度のマッチ**を明示的に指示
-- 複雑な合成(3 枚以上 + 多数要素の再配置)は `quality=high` が必須。`medium` だと破綻しやすい
+- **Up to 5 reference images** is the practical upper limit. More than that scatters the context
+- The `input_fidelity="high"` the Cookbook frequently uses is **already in effect automatically** with gpt-image-2, so it need not be specified
+- **Elements that tend to drift** during compositing: facial expression, fine details of small props, background depth
+- To avoid the "pasted-on look," explicitly instruct **matching of shadow, light, and color temperature**
+- Complex composites (3+ images + repositioning of many elements) require `quality=high`. At `medium` they tend to break down
 
-## 出典
+## Source
 
 - Cookbook 5.8 Insert the Person Into a Scene / 5.9 Multi-Image Referencing and Compositing
 - URL: https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
-- 取得日: 2026-04-23
+- Retrieved: 2026-04-23

@@ -1,28 +1,28 @@
 # Comic / Storyboard
 
-Cookbook 4.7。物語を**複数パネル**の視覚表現に変換。各パネルを独立した visual beat として具体的・アクション中心に記述する。
+Cookbook 4.7. Turn a story into a **multi-panel** visual narrative. Describe each panel as an independent visual beat — concrete and action-focused.
 
-## 使い所
+## When to use
 
-- 4 コマ漫画 / 縦型 SNS リール用ストリップ
-- 映像コンテツの絵コンテ
-- プロダクト紹介のステップ解説(Step 1/2/3...)
-- 小説・エッセイの挿絵連作
+- 4-panel comics / strips for vertical social reels
+- Storyboards for video content
+- Step-by-step product walkthroughs (Step 1/2/3...)
+- Illustration series for novels and essays
 
-## Cookbook 引用
+## Cookbook quote
 
 > "Story-to-comic-strip workflows benefit from defining each beat as concrete, action-focused descriptions. Maintains readability and pacing across panels."
 > — [Cookbook 4.7](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
 
-**書き方のコツ**:
-- **パネル番号を明示**(`Panel 1:`, `Panel 2:`, …)
-- 各パネルで「何が起きているか」を具体的な動詞で
-- キャラの**外観・服装・視線**を**毎パネル繰り返す**(drift 防止、Cookbook Section 2 "Iterate" 原則)
-- 「同一キャラ」であることを明言(`The same pet`, `The same protagonist`)
+**Tips**:
+- **State panel numbers explicitly** (`Panel 1:`, `Panel 2:`, …)
+- Use concrete verbs to describe "what is happening" in each panel
+- **Repeat the character's appearance, clothing, and gaze in every panel** (prevents drift; Cookbook Section 2 "Iterate" principle)
+- Explicitly state that it's the "same character" (`The same pet`, `The same protagonist`)
 
 ---
 
-## プロンプト例(Cookbook 4.7)
+## Prompt example (Cookbook 4.7)
 
 ```
 Create a short vertical comic-style reel with 4 equal-sized panels.
@@ -32,9 +32,9 @@ Panel 3: The house transformed. The pet sprawls across the couch like it owns th
 Panel 4: The door opens. The pet is seated perfectly by the entrance, alert and composed, as if nothing happened.
 ```
 
-**パラメータ**: `size=1024x1536`(縦長で SNS Reel 互換), `quality=medium`
+**Parameters**: `size=1024x1536` (portrait, compatible with social reels), `quality=medium`
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Create a short vertical comic-style reel with 4 equal-sized panels. Panel 1: ..." \
@@ -44,7 +44,7 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## 応用パターン: プロダクト紹介の 3 ステップ
+## Variation: 3-step product walkthrough
 
 ```
 Create a horizontal 3-panel infographic illustrating how to use the product.
@@ -56,15 +56,15 @@ Flat modern illustration style, soft pastel colors, minimal decoration.
 No text on panels. No watermarks.
 ```
 
-**パラメータ**: `size=1536x1024`(横長), `quality=high`
+**Parameters**: `size=1536x1024` (landscape), `quality=high`
 
-**重要**: `Character Consistency:` ブロックで**同一人物**であることを明示。Cookbook 6.4(キャラクター一貫性)の技法と組み合わせる。
+**Note**: Use a `Character Consistency:` block to explicitly state that it's the **same person**. Combine with the Cookbook 6.4 (character consistency) technique.
 
 ---
 
-## 日本語漫画風(縦書き吹き出し付き)
+## Japanese manga style (with vertical speech bubbles)
 
-gpt-image-2 は日本語テキスト描画が強いので、セリフ入り漫画も作れる。
+gpt-image-2 is strong at rendering Japanese text, so you can produce manga with dialogue too.
 
 ```
 Create a 4-panel Japanese manga-style short story, arranged top-to-bottom.
@@ -76,19 +76,19 @@ Style: clean black-and-white manga inking, screentone shading, standard manga pa
 Keep the same salaryman character across all panels. No watermarks.
 ```
 
-> **注意**: 縦書き・右から左のコマ順は必ずしも再現されない。読み順の厳密性が必要なら**生成後に手で並べ替える**前提で運用。
+> **Note**: Vertical text and right-to-left panel order are not always reproduced. If strict reading order matters, plan to **reorder the panels by hand after generation**.
 
 ---
 
-## gpt-image-2 固有の注意
+## gpt-image-2-specific notes
 
-- **パネル数は 4 が安定**。6 以上になると各コマの描写が甘くなる(縦横比を圧迫されるため)
-- 同一キャラの**外観 drift** は発生しやすい。公式 Cookbook 4.7 の推奨は「**毎パネルでキャラの外見を繰り返し書く**」
-- 縦型(`1024x1536`)は TikTok/Reels サイズ、横型(`1536x1024`)はスライド・横スクロール向け
-- コスト: 4 コマ入りポスターを 1 枚生成なので、`high` でも 1 回分($0.165〜$0.211)
+- **4 panels is the stable count.** Beyond 6, each panel's rendering degrades (the aspect ratio gets squeezed).
+- **Appearance drift** of the same character happens easily. The official Cookbook 4.7 recommendation is to "**rewrite the character's appearance in every panel**".
+- Portrait (`1024x1536`) fits TikTok/Reels sizes; landscape (`1536x1024`) suits slides and horizontal scrolling.
+- Cost: a single poster containing 4 panels is generated as one image, so even `high` is a single charge ($0.165–$0.211).
 
-## 出典
+## Source
 
 - Cookbook 4.7 Story-to-Comic Strip
 - URL: https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
-- 取得日: 2026-04-23
+- Retrieved: 2026-04-23

@@ -1,33 +1,33 @@
 # Character Consistency / Concept Art / Keepsake
 
-Cookbook 6.2(3D Pop-Up Holiday Card)、6.3(Collectible Action Figure)、6.4(Children's Book Art with Character Consistency)を統合。**プレミアム素材感の演出** と **複数画像を跨ぐキャラの同一性維持** が共通テーマ。
+Combines Cookbook 6.2 (3D Pop-Up Holiday Card), 6.3 (Collectible Action Figure), and 6.4 (Children's Book Art with Character Consistency). The shared themes are **conveying a premium material feel** and **maintaining a character's identity across multiple images**.
 
-## 使い所
+## When to use
 
-- 絵本・マルチシーンのイラスト連作(同一キャラが複数シーンに登場)
-- 玩具・コレクタブルの**コンセプト画像**(物理製品の広告用)
-- 季節のグリーティングカード(年賀状・クリスマスカード)
-- 企業マスコット・ブランドキャラクターのシーン展開
+- Picture books / multi-scene illustration series (the same character appears in multiple scenes)
+- **Concept images** for toys and collectibles (for advertising physical products)
+- Seasonal greeting cards (New Year cards, Christmas cards)
+- Scene variations for corporate mascots and brand characters
 
-## 共通設計原則
+## Core principles
 
-### プレミアム素材感(6.2, 6.3)
+### Premium material feel (6.2, 6.3)
 
 > "Premium concept artwork benefits from describing it like product photography: tactile materials (paper layers, textures, worn fur, plastic edges), soft studio lighting, shallow depth of field. The result should feel like a photo of a physical keepsake or retail product, not an illustration."
 > — [Cookbook 6.2 / 6.3](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
 
-### キャラクター一貫性(6.4)
+### Character consistency (6.4)
 
 > "Multi-scene character workflows require an 'anchor image' first, then edit-based continuations that explicitly repeat the character's outfit, facial features, and style. Restate 'do not redesign the character' in every follow-up."
 
-**設計の 3 本柱**:
-- **Scene / Mood / Style / Constraints の 4 ブロック分割**(6.2 / 6.3 の標準フォーマット)
-- **Anchor-first アプローチ**(6.4): 最初に 1 枚で設定を固定 → 以降は edit で派生
-- **素材感の語彙**: `tactile`, `worn`, `stitched`, `realistic plastic`, `painted metal`, `bokeh`
+**Three design pillars**:
+- **Split into 4 blocks: Scene / Mood / Style / Constraints** (the standard 6.2 / 6.3 format)
+- **Anchor-first approach** (6.4): lock the design in one image first → derive the rest via edits
+- **Material-feel vocabulary**: `tactile`, `worn`, `stitched`, `realistic plastic`, `painted metal`, `bokeh`
 
 ---
 
-## プロンプト例 1: ホリデーカード(Cookbook 6.2)
+## Prompt example 1: holiday card (Cookbook 6.2)
 
 ```
 Create a Christmas holiday card illustration.
@@ -55,13 +55,13 @@ Include ONLY this card text (verbatim):
 "Merry Christmas — some memories never fade."
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`(テキスト重視なら `high`)
+**Parameters**: `size=1024x1536`, `quality=medium` (use `high` if text matters)
 
 ---
 
-## プロンプト例 2: コレクタブル玩具のパッケージ写真(Cookbook 6.3)
+## Prompt example 2: collectible toy packaging shot (Cookbook 6.3)
 
-Python f-string テンプレートとして:
+As a Python f-string template:
 
 ```python
 prompt = f"""
@@ -88,9 +88,9 @@ Include ONLY this packaging text (verbatim):
 """
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`
+**Parameters**: `size=1024x1536`, `quality=medium`
 
-**CLI 例**(変数置換済み):
+**CLI example** (with variables substituted):
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Create a collectible action figure of a retro Japanese shiba inu mascot with a red scarf, in blister packaging. Concept: ..." \
@@ -100,9 +100,9 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## プロンプト例 3: キャラクター Anchor + 派生シーン(Cookbook 6.4、**2 段ワークフロー**)
+## Prompt example 3: character anchor + derived scenes (Cookbook 6.4, **two-stage workflow**)
 
-### Part 1: Anchor 生成(text → image)
+### Part 1: anchor generation (text → image)
 
 ```
 Create a children's book illustration introducing a main character.
@@ -128,9 +128,9 @@ Constraints:
 - Plain forest background to clearly showcase the character
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`、入力画像なし
+**Parameters**: `size=1024x1536`, `quality=medium`, no input image
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Create a children's book illustration introducing a main character. Character: ..." \
@@ -138,7 +138,7 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   --output-name forest_hero_anchor
 ```
 
-### Part 2: 派生シーン(edit 経路、anchor を `--reference` に)
+### Part 2: derived scene (edit path, anchor as `--reference`)
 
 ```
 Continue the children's book story using the same character.
@@ -164,9 +164,9 @@ Constraints:
 - No watermarks
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`、入力画像 1 枚(Part 1 の出力)
+**Parameters**: `size=1024x1536`, `quality=medium`, one input image (the Part 1 output)
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Continue the children's book story using the same character. Scene: ..." \
@@ -177,15 +177,15 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## gpt-image-2 固有の注意
+## gpt-image-2-specific notes
 
-- **edit 経路は常に全画面再描画**だが、gpt-image-2 は自動最大忠実度のためキャラ外観は強く保たれる
-- `Do not redesign the character` は**毎ターン書く**のが drift 防止の鉄則
-- キャラの外観特徴(服の色、髪型、顔立ち)を**繰り返し言語化**する(`Same green hooded tunic` など)
-- 6.4 のワークフローは Phase 0.5 で予定されている Responses API(`previous_response_id`)移行時にさらに安定する — 現状は edit + `--reference` で代替
+- **The edit path always re-renders the full canvas**, but because gpt-image-2 uses auto max fidelity, the character's appearance is strongly preserved.
+- Writing `Do not redesign the character` **in every turn** is the cardinal rule for preventing drift.
+- **Repeatedly verbalize** the character's appearance traits (clothing color, hairstyle, facial features) (e.g. `Same green hooded tunic`).
+- The 6.4 workflow will become even more stable once the Responses API (`previous_response_id`) migration planned for Phase 0.5 lands — for now, substitute edit + `--reference`.
 
-## 出典
+## Source
 
 - Cookbook 6.2 3D pop-up holiday card / 6.3 Collectible Action Figure / 6.4 Children's Book Art with Character Consistency
 - URL: https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
-- 取得日: 2026-04-23
+- Retrieved: 2026-04-23

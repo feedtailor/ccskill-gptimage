@@ -1,33 +1,33 @@
-# Ads & Marketing(画像内テキスト含む)
+# Ads & Marketing (including in-image text)
 
-Cookbook 4.6(Ads Generation)+ 5.5(Marketing Creatives with Real Text In-Image)を統合。**ブランド + オーディエンス + コピーを明示的にプロンプトに含める**のが共通原則。
+Combines Cookbook 4.6 (Ads Generation) + 5.5 (Marketing Creatives with Real Text In-Image). The shared principle is to **include the brand + audience + copy explicitly in the prompt**.
 
-## 使い所
+## When to use
 
-- 広告クリエイティブ(Instagram、雑誌、交通広告)
-- ビルボード / サイネージのモックアップ
-- 製品画像にキャンペーンコピーを載せた SNS 素材
-- キャンペーン予告ビジュアル
+- Ad creatives (Instagram, magazines, transit ads)
+- Billboard / signage mockups
+- Social media assets with campaign copy laid over a product image
+- Campaign teaser visuals
 
-## Cookbook 原則
+## Cookbook principles
 
-### 4.6 — ブリーフ形式で書く
+### 4.6 — Write it as a brief
 
-> Ads は技術仕様ではなく**クリエイティブブリーフ**として書く。ブランド、オーディエンス、概念、構成、正確なコピーを記述し、モデルに創造的な判断を委ねる。
+> Write ads as a **creative brief**, not a technical spec. Describe the brand, audience, concept, composition, and exact copy, and leave the creative judgment to the model.
 
-### 5.5 — テキストを字義通り描かせる
+### 5.5 — Make text render verbatim
 
 > "When baking marketing copy into an image, lock typography with explicit constraints: quote the exact copy, demand verbatim rendering with no extra characters, and describe placement and font style."
 
-**書き方のコツ**:
-- `Billboard text (EXACT, verbatim, no extra characters):` のように**最強の縛り**を入れる
-- タイポグラフィを必ず指定: `bold sans-serif, high contrast, centered, clean kerning`
-- `Ensure text appears once and is perfectly legible.` を添えて重複描画を防ぐ
-- `No watermarks, no logos.` で余計なマークを排除
+**Tips**:
+- Use **the strongest possible binding**, like `Billboard text (EXACT, verbatim, no extra characters):`
+- Always specify typography: `bold sans-serif, high contrast, centered, clean kerning`
+- Add `Ensure text appears once and is perfectly legible.` to prevent duplicate rendering
+- Use `No watermarks, no logos.` to exclude stray marks
 
 ---
 
-## プロンプト例 1: ブランドキャンペーン画像(Cookbook 4.6)
+## Prompt example 1: Brand campaign image (Cookbook 4.6)
 
 ```
 Give me a cool in culture ad / fashion shot for a brand called Thread.
@@ -38,9 +38,9 @@ Render the tagline exactly once, clearly and legibly, integrated into the ad lay
 No extra text, no watermarks, no unrelated logos.
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`
+**Parameters**: `size=1024x1536`, `quality=medium`
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Give me a cool in culture ad / fashion shot for a brand called Thread. ..." \
@@ -50,7 +50,7 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## プロンプト例 2: 既存商品画像にコピーを載せたビルボード(Cookbook 5.5 / edit 経路)
+## Prompt example 2: A billboard with copy laid over an existing product image (Cookbook 5.5 / edit path)
 
 ```
 Create a realistic billboard mockup of the shampoo on a highway scene during sunset.
@@ -61,9 +61,9 @@ Ensure text appears once and is perfectly legible.
 No watermarks, no logos.
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`, 入力画像 1 枚(シャンプーボトル)
+**Parameters**: `size=1024x1536`, `quality=medium`, 1 input image (shampoo bottle)
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Create a realistic billboard mockup of the shampoo on a highway scene during sunset. Billboard text (EXACT, verbatim, no extra characters): \"Fresh and clean\" Typography: bold sans-serif, high contrast, centered, clean kerning. Ensure text appears once and is perfectly legible. No watermarks, no logos." \
@@ -72,9 +72,9 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## 日本語コピー入りの広告(gpt-image-2 の強み活用)
+## Ads with Japanese copy (leveraging gpt-image-2's strength)
 
-gpt-image-2 は日本語テキストの描画精度が高いので、以下のような日本語コピー広告も 1 発で作れる。
+gpt-image-2 renders Japanese text with high accuracy, so you can produce ads with Japanese copy like the following in one shot.
 
 ```
 Create a subway poster mockup for a Japanese matcha drink brand launching spring 2026.
@@ -87,24 +87,24 @@ Green-and-white palette, minimal layout, a single matcha drink centered.
 No watermarks, no extra text, no logos.
 ```
 
-**ポイント**:
-- 日本語フォント指定を明示(`Mincho` / `Gothic`)
-- 引用符 `"一杯で、春。"` で字義通りに囲む
-- 句読点も含めて囲む(句点 `。` まで正確に再現させる)
+**Key points**:
+- Specify Japanese fonts explicitly (`Mincho` / `Gothic`)
+- Wrap the copy in quotes — `"一杯で、春。"` — for verbatim rendering
+- Include punctuation inside the quotes (so even the period `。` is reproduced exactly)
 
-> **関連**: 街並み・店内・ローカル感のあるビジュアルで**日本語看板や文化圏アイコン**を使う場合は [`cultural-atmosphere.md`](cultural-atmosphere.md) も参照。「読めない文字だけ」を強制して文化を消してしまう落とし穴と、その回避パターンを扱う。
+> **Related**: when using **Japanese signage or cultural icons** in streetscape, interior, or local-flavor visuals, also see [`cultural-atmosphere.md`](cultural-atmosphere.md). It covers the pitfall of forcing "illegible characters only" and erasing the culture, along with patterns to avoid it.
 
 ---
 
-## gpt-image-2 固有の注意
+## gpt-image-2-specific notes
 
-- **テキストの複数回描画バグ**を避けるため、`Ensure text appears once` は必ず入れる
-- 長いコピーは描画ミスが出やすい。**10〜15 文字程度のキャッチコピーまで**が実用域
-- edit 経路で商品画像を持ち込む場合、**商品の形状・ロゴは自動で保持**される(`input_fidelity` 不要)
-- コスト優先なら試行は `quality=low`、納品は `quality=high`(`medium` は中途半端でテキストがぼやける)
+- To avoid the **duplicate-text rendering bug**, always include `Ensure text appears once`
+- Long copy is prone to rendering errors. **Catchphrases of about 10–15 characters** are the practical limit
+- When bringing in a product image via the edit path, **the product's shape and logo are preserved automatically** (no `input_fidelity` needed)
+- If cost is the priority, try with `quality=low` and deliver at `quality=high` (`medium` is a halfway point where text gets blurry)
 
-## 出典
+## Source
 
 - Cookbook 4.6 Ads Generation / 5.5 Marketing Creatives with Real Text In-Image
 - URL: https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
-- 取得日: 2026-04-23
+- Retrieved: 2026-04-23

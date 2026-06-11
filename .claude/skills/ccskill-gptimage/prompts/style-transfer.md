@@ -1,34 +1,34 @@
-# Style Transfer — 参照画像のビジュアル言語を別コンテンツへ
+# Style Transfer — Carry a reference image's visual language to new content
 
-Cookbook 5.1。参照画像の**パレット・テクスチャ・筆致**を保ちつつ、被写体やシーンを差し替える。
+Cookbook 5.1. Keep the **palette, texture, and brushwork** of a reference image while swapping the subject or scene.
 
-## 使い所
+## When to use
 
-- アートワークのスタイルを統一してシリーズ化
-- ブランドビジュアルガイドに沿った追加素材生成
-- 参照作品の「雰囲気」を再利用して別構図のイラストを作る
+- Unifying artwork style across a series
+- Generating additional assets that follow a brand visual guide
+- Reusing the "mood" of a reference work to make an illustration with a different composition
 
-## Cookbook 引用
+## Cookbook quote
 
 > "Preserves the visual language (palette, texture, brushwork) from a reference image while changing the subject or scene. Success requires specifying what stays consistent and what changes, with hard constraints to prevent drift."
 > — [Cookbook 5.1](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
 
-**書き方のコツ**:
-- 「保持するスタイル要素」と「変えるコンテンツ」を分けて明示
-- 保持するスタイルを言語化: `palette, texture, brushwork, film grain, line thickness`
-- **反復時は保持制約を毎回繰り返す**(drift 防止)
+**Tips**:
+- Separate and state explicitly the "style elements to preserve" and the "content to change".
+- Verbalize the style to preserve: `palette, texture, brushwork, film grain, line thickness`.
+- **Repeat the preserve constraints on every iteration** (to prevent drift).
 
 ---
 
-## プロンプト例(Cookbook 5.1)
+## Prompt example (Cookbook 5.1)
 
 ```
 Use the same style from the input image and generate a man riding a motorcycle on a white background.
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=medium`、入力画像 1 枚(スタイル参照)
+**Parameters**: `size=1024x1536`, `quality=medium`, 1 input image (style reference)
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Use the same style from the input image and generate a man riding a motorcycle on a white background." \
@@ -37,9 +37,9 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## 応用: スタイル要素を明示化してより強く反映
+## Variation: spell out style elements for a stronger reflection
 
-Cookbook 原文はシンプルだが、スタイル要素を具体化するとブレにくい。
+The Cookbook original is simple, but making the style elements concrete reduces drift.
 
 ```
 Use the same visual style as the input image — specifically:
@@ -51,7 +51,7 @@ Apply this style to a new subject: a young woman sitting at a cafe window in the
 Preserve the exact style properties listed above. Do not shift to photorealism.
 ```
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Use the same visual style as the input image — specifically: ..." \
@@ -60,13 +60,13 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## 連作のシリーズ化パターン
+## Pattern for building a series
 
-最初の 1 枚を **anchor** として、シリーズ化したい時は character-and-concept.md の Anchor-first 技法とも組み合わせる。
+Treat the first image as an **anchor**; when you want to build out a series, combine this with the Anchor-first technique in character-and-concept.md.
 
 ```
 Use the same style and color palette as the input image.
-Generate the next scene in the series: [シーンを記述].
+Generate the next scene in the series: [describe the scene].
 Style Consistency:
 - Same line weight, color saturation, and texture as the reference
 - Same illustration technique (do not shift to digital painting or photorealism)
@@ -77,15 +77,15 @@ Constraints:
 
 ---
 
-## gpt-image-2 固有の注意
+## gpt-image-2-specific notes
 
-- **自動最大忠実度**で入力画像のスタイルも強く拾われる(`input_fidelity` 不要)
-- 複数のスタイル参照を合成したい場合は **2 枚以上 `--reference`** できる(Multi-Image Inputs パターン)
-- スタイル転写は**完璧な複製ではない**。「雰囲気の継承」として運用する
-- 写真→イラスト化、イラスト→写真化、のような**メディウム変換**は style transfer よりも sketch-to-render.md のパターンが適切
+- **Auto max fidelity** also picks up the input image's style strongly (`input_fidelity` not needed).
+- To blend multiple style references, you can pass **two or more `--reference`** images (Multi-Image Inputs pattern).
+- Style transfer is **not a perfect copy**. Treat it as "inheriting the mood".
+- For **medium conversion** like photo→illustration or illustration→photo, the sketch-to-render.md pattern is more appropriate than style transfer.
 
-## 出典
+## Source
 
 - Cookbook 5.1 Style Transfer
 - URL: https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
-- 取得日: 2026-04-23
+- Retrieved: 2026-04-23

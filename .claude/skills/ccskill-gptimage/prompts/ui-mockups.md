@@ -1,28 +1,28 @@
 # UI Mockups
 
-Cookbook 4.8。モバイル/Web アプリの UI モックアップ。**「実装済み製品として記述する」**(コンセプトアート用語を避ける)のが最大のコツ。
+Cookbook 4.8. UI mockups for mobile/web apps. The single biggest tip is to **"describe it as a shipped product"** (avoid concept-art vocabulary).
 
-## 使い所
+## When to use
 
-- モバイルアプリの設計スケッチ(iPhone / Android フレーム付き)
-- Web サービスのダッシュボード
-- プロダクトデモ用のスクリーンモック
-- 営業資料用の UI ビジュアライゼーション
+- Design sketches for mobile apps (with iPhone / Android frames)
+- Dashboards for web services
+- Screen mockups for product demos
+- UI visualizations for sales materials
 
-## Cookbook 引用
+## Cookbook quote
 
 > "UI mockups should be described as if you're describing an implemented product: focus on layout, hierarchy, spacing, and actual interface elements. Avoid 'concept art' or 'design sketch' language—instead, describe it as if the app already ships."
 > — [Cookbook 4.8](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
 
-**書き方のコツ**:
-- `design sketch` / `mockup concept` は避ける → `real, well-designed, beautiful app` と書く
-- レイアウトを具体的に: ヘッダ、リスト、セクション、情報階層
-- 実在の UI 要素(ベンダー一覧、Today's specials、location/hours)を仮想のブランド名付きで
-- デバイスフレーム指示(`Place the UI mockup in an iPhone frame.`)があると最終成果物が使いやすい
+**Tips**:
+- Avoid `design sketch` / `mockup concept` → write `real, well-designed, beautiful app`
+- Be specific about layout: header, list, sections, information hierarchy
+- Use real UI elements (vendor list, Today's specials, location/hours) with fictional brand names
+- A device-frame instruction (`Place the UI mockup in an iPhone frame.`) makes the final asset easier to use
 
 ---
 
-## プロンプト例(Cookbook 4.8)
+## Prompt example (Cookbook 4.8)
 
 ```
 Create a realistic mobile app UI mockup for a local farmers market.
@@ -32,9 +32,9 @@ It should look like a real, well-designed, beautiful app for a small local marke
 Place the UI mockup in an iPhone frame.
 ```
 
-**パラメータ**: `size=1024x1536`(モバイル縦型), `quality=medium`(細かいラベル多用なら `high`)
+**Parameters**: `size=1024x1536` (mobile portrait), `quality=medium` (use `high` if there are many small labels)
 
-**CLI 例**:
+**CLI example**:
 ```bash
 $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
   "Create a realistic mobile app UI mockup for a local farmers market. ..." \
@@ -44,7 +44,7 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 ---
 
-## 応用: Web ダッシュボード
+## Variation: web dashboard
 
 ```
 Create a realistic desktop web app dashboard UI for a DMARC monitoring SaaS called "MailGuard".
@@ -57,13 +57,13 @@ No watermarks, no extra text, no stock imagery.
 Render at standard desktop browser proportions.
 ```
 
-**パラメータ**: `size=1536x1024`(横長 PC 画面), `quality=high`(ダッシュボードは小さなテキストが多いため必須)
+**Parameters**: `size=1536x1024` (landscape PC screen), `quality=high` (essential for dashboards, which have lots of small text)
 
 ---
 
-## iPhone Frame 付きでより映えるパターン
+## Pattern that pops more with an iPhone frame
 
-Cookbook 原文の `Place the UI mockup in an iPhone frame.` は、**完成スクリーンショットではなく端末モックアップ**を作りたい時に効く。
+The Cookbook's original `Place the UI mockup in an iPhone frame.` works well when you want a **device mockup rather than a flat screenshot**.
 
 ```
 Create a realistic product hero image showing the MailGuard mobile app UI inside an iPhone 15 Pro frame.
@@ -72,20 +72,20 @@ Inside the screen: the app's main dashboard with DMARC alerts and pass-rate visu
 Background: clean Scandinavian office, shallow depth of field, photorealistic.
 ```
 
-**パラメータ**: `size=1024x1536`, `quality=high`
+**Parameters**: `size=1024x1536`, `quality=high`
 
 ---
 
-## gpt-image-2 固有の注意
+## gpt-image-2-specific notes
 
-- **UI モックアップには `quality=high` がほぼ必須**。`medium` だと小さなテキスト・アイコンが崩れる
-- モバイル UI は縦長(`1024x1536`)、Web UI は横長(`1536x1024`)が自然
-- **実在ブランドの UI を模倣するプロンプトは避ける**(`like Instagram`, `like Slack` など)— 独自ブランドで作る
-- 細かい数値(`94%`, `1.2M`)はプロンプトに**直接書く**。モデル任せだと数値が変動する
-- Cookbook 4.8 の `in an iPhone frame` 指示は強力 — 実際の端末モックアップに仕立ててくれる
+- **`quality=high` is nearly mandatory for UI mockups.** At `medium`, small text and icons break down.
+- Mobile UI is naturally portrait (`1024x1536`); web UI is naturally landscape (`1536x1024`).
+- **Avoid prompts that imitate real-brand UIs** (`like Instagram`, `like Slack`, etc.) — build with your own brand.
+- Write precise figures (`94%`, `1.2M`) **directly** in the prompt. Left to the model, the numbers drift.
+- The Cookbook 4.8 `in an iPhone frame` instruction is powerful — it turns the result into an actual device mockup.
 
-## 出典
+## Source
 
 - Cookbook 4.8 UI Mockups
 - URL: https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
-- 取得日: 2026-04-23
+- Retrieved: 2026-04-23
