@@ -194,9 +194,12 @@ ccskill-gptimage generate "A sunlit indoor lounge with a pool" --reference ./lou
 
 ## トラブルシューティング
 
+`ccskill-gptimage doctor` で環境と backend を手早く診断できます。秘密ファイル(`.env` / Codex 認証)の中身は一切読まず、判定は presence ベースです(確証は実際に生成した時)。
+
 | エラー表示 | 対処 |
 |---|---|
 | `403 Forbidden` | OpenAI Organization Verification が未完了 → Organization Settings で完了させる |
+| 原因が分からない | `ccskill-gptimage doctor` を実行 |
 
 ## ライセンス
 

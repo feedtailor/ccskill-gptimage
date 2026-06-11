@@ -194,9 +194,12 @@ Each image is saved with a **metadata JSON** sidecar (`{name}.{ext}.json`) for r
 
 ## Troubleshooting
 
+Run `ccskill-gptimage doctor` for a quick diagnosis of your environment and backends. It never reads secret files (`.env` / Codex credentials) — checks are presence-based, and the definitive test is running an actual generation.
+
 | Symptom | Fix |
 |---|---|
 | `403 Forbidden` | OpenAI Organization Verification is incomplete → complete it in Organization Settings |
+| Not sure what's wrong | Run `ccskill-gptimage doctor` |
 
 ## License
 

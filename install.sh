@@ -187,33 +187,33 @@ echo "  (available in every Claude Code project; auto-updates via git pull)"
 echo ""
 
 # ========================================
-# 5. backend 利用可否の診断
+# 5. backend 利用可否の診断(presence ベース。秘密ファイルの中身は読まない: issue #021)
 # ========================================
 
-echo "Step 5: Checking image-generation backends..."
+echo "Step 5: Checking image-generation backends (presence-based; secrets not read)..."
 
+# Codex: CLI の存在 + ログインセッションファイルの存在のみで判定(token は読まない)
 CODEX_OK=false
 if command -v codex &> /dev/null && [ -f "$HOME/.codex/auth.json" ]; then
-    if grep -q '"access_token"' "$HOME/.codex/auth.json" 2>/dev/null; then
-        CODEX_OK=true
-    fi
+    CODEX_OK=true
 fi
 
+# API: 環境変数の有無 + .env ファイルの存在のみで判定(.env の中身は読まない)
 API_OK=false
 if [ -n "${OPENAI_API_KEY:-}" ]; then
     API_OK=true
-elif [ -f "$REPO_DIR/.env" ] && grep -q '^OPENAI_API_KEY=..*' "$REPO_DIR/.env" 2>/dev/null; then
+elif [ -f "$REPO_DIR/.env" ]; then
     API_OK=true
 fi
 
 if [ "$CODEX_OK" = true ]; then
-    echo -e "${GREEN}✓ Codex CLI backend available (ChatGPT subscription)${NC}"
+    echo -e "${GREEN}✓ Codex CLI backend: likely (codex CLI + login session present)${NC}"
 else
     echo -e "${YELLOW}- Codex CLI backend not available${NC} (brew install codex && codex login)"
 fi
 
 if [ "$API_OK" = true ]; then
-    echo -e "${GREEN}✓ OpenAI API backend available (OPENAI_API_KEY)${NC}"
+    echo -e "${GREEN}✓ OpenAI API backend: likely (OPENAI_API_KEY set or .env present)${NC}"
 else
     echo -e "${YELLOW}- OpenAI API backend not configured${NC} (cp .env.example .env, then set OPENAI_API_KEY)"
 fi
