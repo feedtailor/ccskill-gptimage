@@ -52,7 +52,7 @@ The campsite is in Yosemite National Park, with believable natural details. The 
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Generate a highly realistic action scene where this person is ..." \
   --reference ./person_source.jpg --quality high
 ```
@@ -69,7 +69,7 @@ Place the dog from the second image into the setting of image 1, right next to t
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Place the dog from the second image into the setting of image 1, right next to the woman, use the same style of lighting, composition and background. Do not change anything else." \
   --reference ./scene_with_woman.jpg \
   --reference ./dog.jpg \

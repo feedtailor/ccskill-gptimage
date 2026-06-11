@@ -84,57 +84,53 @@ Add the API key from (a) to `.env`:
 OPENAI_API_KEY=sk-...
 ```
 
-### 3. Install dependencies
+### 3. Run the installer
+
 Move into the directory where you cloned ccskill-gptimage and run:
 
 ```bash
 cd /path/to/ccskill-gptimage
-python3 -m venv venv
-source venv/bin/activate
-python -m pip install -r requirements.txt
+./install.sh
 ```
 
-### 4. Set the command path environment variable
+The installer takes care of everything:
 
-Add the following to `.bashrc` / `.zshrc`:
+- Creates the Python venv and installs dependencies
+- Deploys the `ccskill-gptimage` command to `~/.local/bin` (tells you what to add if it's not in your PATH)
+- Registers the skill at the user level (`~/.claude/skills/ccskill-gptimage`), so it's available in **every** Claude Code project — no per-project setup needed
+- Diagnoses which backends (Codex CLI / API key) are currently available
 
-```bash
-export CCSKILL_GPTIMAGE_DIR="/path/to/ccskill-gptimage"
-```
+Re-running it is safe (idempotent).
 
 ## Usage
-First, create a symbolic link under the `.claude/skills` directory of the project where you want to use the skill.
 
-```bash
-# Create the .claude/skills directory under your project if it doesn't exist
-cd /path/to/your-project/
-mkdir -p .claude/skills
-
-# Create the symbolic link so the skill is recognized
-ln -s $CCSKILL_GPTIMAGE_DIR/.claude/skills/ccskill-gptimage .claude/skills/ccskill-gptimage
-```
-
-In Claude Code, ask it to generate images with ChatGPT Images 2.0, or invoke the skill explicitly by typing `/ccskill-gptimage` in your prompt.
+In any Claude Code project, just ask it to generate images with ChatGPT Images 2.0, or invoke the skill explicitly by typing `/ccskill-gptimage` in your prompt.
 
 You don't need to write a detailed prompt yourself — Claude Code composes the optimal prompt from the conversation context and project information, and picks appropriate options for the task.
 
 
 ## Updating
-Run `git pull` where you cloned this skill:
+Run `git pull` where you cloned this skill. Both the skill registration and the command are symlinks to the clone, so they pick up the update automatically:
 
 ```bash
-cd $CCSKILL_GPTIMAGE_DIR
+cd /path/to/ccskill-gptimage
 git pull
 ```
 
-## Using the CLI standalone
-
-You can also use it as an image-generation command.
+## Uninstalling
 
 ```bash
-cd $CCSKILL_GPTIMAGE_DIR
-source venv/bin/activate
-python generate_image.py "a coastal sunset"
+ccskill-gptimage uninstall
+```
+
+This removes the symlinks (`~/.local/bin/ccskill-gptimage` and `~/.claude/skills/ccskill-gptimage`); the cloned repository itself is kept.
+
+## Using the CLI standalone
+
+You can also use it as an image-generation command, from any directory:
+
+```bash
+ccskill-gptimage generate "a coastal sunset"
 ```
 
 ### Options
@@ -157,19 +153,19 @@ python generate_image.py "a coastal sunset"
 
 ```bash
 # Basic
-python generate_image.py "A minimalist fox logo, flat vector, navy and gold"
+ccskill-gptimage generate "A minimalist fox logo, flat vector, navy and gold"
 
 # Japanese poster
-python generate_image.py 'A minimalist editorial poster with the exact title "腹落ちDMARC" in large serif Japanese font, dark navy background' --size 1024x1536 --quality high
+ccskill-gptimage generate 'A minimalist editorial poster with the exact title "腹落ちDMARC" in large serif Japanese font, dark navy background' --size 1024x1536 --quality high
 
 # Edit using a reference (background swap)
-python generate_image.py "Place the same fox logo on a deep navy background with subtle gold sparkles. Preserve the fox's pose and proportions from the reference." --reference ./logo.png --quality medium
+ccskill-gptimage generate "Place the same fox logo on a deep navy background with subtle gold sparkles. Preserve the fox's pose and proportions from the reference." --reference ./logo.png --quality medium
 
 # Multi-reference composition
-python generate_image.py "Photorealistic gift basket on white" --reference ./a.png --reference ./b.png --reference ./c.png
+ccskill-gptimage generate "Photorealistic gift basket on white" --reference ./a.png --reference ./b.png --reference ./c.png
 
 # Mask-guided editing (requires --backend api)
-python generate_image.py "A sunlit indoor lounge with a pool" --reference ./lounge.png --mask ./mask.png --backend api
+ccskill-gptimage generate "A sunlit indoor lounge with a pool" --reference ./lounge.png --mask ./mask.png --backend api
 ```
 
 ### Output files

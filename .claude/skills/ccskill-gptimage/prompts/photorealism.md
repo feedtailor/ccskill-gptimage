@@ -35,7 +35,7 @@ The image should feel honest and unposed, with real skin texture, worn materials
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Create a photorealistic candid photograph of an elderly sailor ..." \
   --size 1024x1536 --quality high
 ```

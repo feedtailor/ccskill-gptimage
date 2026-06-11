@@ -15,19 +15,16 @@ Generates and edits images via OpenAI gpt-image-2. **The user only describes int
 
 ## Prerequisites
 
-- Set `CCSKILL_GPTIMAGE_DIR` to this skill's repo path:
-  ```bash
-  export CCSKILL_GPTIMAGE_DIR="$HOME/projects/ccskill-gptimage"
-  ```
+- The repo's `./install.sh` has been run — it deploys the `ccskill-gptimage` command to `~/.local/bin` (PATH) and registers this skill at the user level. If the command is not found, fall back to direct invocation: `$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py ...` (requires the `CCSKILL_GPTIMAGE_DIR` env var pointing at the repo).
 - **At least one backend must be available:**
   - **Codex CLI** (recommended for ChatGPT subscribers): `brew install codex` + `codex login`. No API key, no extra billing.
-  - **OpenAI API key**: set `OPENAI_API_KEY` (env or `$CCSKILL_GPTIMAGE_DIR/.env`). Your **Organization must be Verified** (unverified orgs get 403).
+  - **OpenAI API key**: set `OPENAI_API_KEY` (env or `.env` in the repo). Your **Organization must be Verified** (unverified orgs get 403).
 - Default `--backend auto` prefers Codex, falls back to API on failure. Force a specific path with `--backend codex` or `--backend api`.
 
 ## Usage
 
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py "prompt"
+ccskill-gptimage generate "prompt"
 ```
 
 ### Options
@@ -52,12 +49,12 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py "p
 
 ```bash
 # text-to-image (generation)
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "A minimalist editorial poster with the exact title \"腹落ちDMARC\" in large serif Japanese font at the top, dark navy background" \
   --size 1024x1536 --quality high
 
 # reference editing
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Replace only the background with a neon Tokyo street at night. Preserve the person's face and pose exactly as in the reference." \
   --reference ./portrait.png --quality high
 ```
@@ -126,7 +123,7 @@ These apply to **every** use case and are critical context when composing prompt
 
 1. **Post-process with `rembg`** (recommended — preserves gpt-image-2's text-rendering and layout strengths):
    ```bash
-   $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py "... on plain white background"
+   ccskill-gptimage generate "... on plain white background"
    rembg i generated_images/<image>.png generated_images/<image>_alpha.png
    ```
 2. **Switch to `gpt-image-1.5`** (supports `--background transparent` natively)

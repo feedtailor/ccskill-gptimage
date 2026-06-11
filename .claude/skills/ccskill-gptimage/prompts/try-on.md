@@ -35,7 +35,7 @@ Edit the image to dress the woman using the provided clothing images. Do not cha
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Edit the image to dress the woman using the provided clothing images. Do not change her face ..." \
   --reference ./model.png \
   --reference ./item_tanktop.png \
@@ -56,7 +56,7 @@ Edit the image to change only the woman's top to a beige cashmere sweater. Keep 
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Edit the image to change only the woman's top to a beige cashmere sweater. ..." \
   --reference ./model.png --quality high
 ```

@@ -36,7 +36,7 @@ Place the UI mockup in an iPhone frame.
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Create a realistic mobile app UI mockup for a local farmers market. ..." \
   --size 1024x1536 --quality high \
   --output-name farmers_app_mock

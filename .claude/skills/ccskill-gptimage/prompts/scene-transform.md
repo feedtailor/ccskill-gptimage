@@ -37,7 +37,7 @@ Make it look like a winter evening with snowfall.
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Make it look like a winter evening with snowfall." \
   --reference ./sunset_scene.jpg --quality high
 ```
@@ -68,7 +68,7 @@ Remove the flower from man's hand. Do not change anything else.
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Remove the flower from man's hand. Do not change anything else." \
   --reference ./man_with_flower.jpg --quality high
 ```

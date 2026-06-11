@@ -33,6 +33,8 @@ generated_images/ に保存 + メタデータ JSON サイドカー
 
 ## 参照
 
+- **インストーラー**: @install.sh(venv 構築 + `~/.local/bin` への symlink 配備 + ユーザレベルスキル登録。issue #020)
+- **CLI ディスパッチャ**: @ccskill-gptimage(自己位置解決。`generate` / `uninstall` / `version` / `help`)
 - **画像生成スクリプト**: @generate_image.py
 - **スキル定義 + プロンプトベストプラクティス + ユースケース別プロンプト集**: @.claude/skills/ccskill-gptimage/SKILL.md / SKILL.ja.md / prompts/
 - **テスト**: @tests/test_generate_image.py

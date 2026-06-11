@@ -84,57 +84,53 @@ cp .env.example .env
 OPENAI_API_KEY=sk-...
 ```
 
-### 3. 依存パッケージのインストール
+### 3. インストーラーの実行
+
 ccskill-gptimage を `git clone` したディレクトリに移動し、以下を実行します。
 
 ```bash
 cd /path/to/ccskill-gptimage
-python3 -m venv venv
-source venv/bin/activate
-python -m pip install -r requirements.txt
+./install.sh
 ```
 
-### 4. コマンドのパスを環境変数に設定
+インストーラーが以下を全て行います:
 
-`.bashrc` / `.zshrc` に以下を追加して下さい。
+- Python venv の作成と依存パッケージのインストール
+- `ccskill-gptimage` コマンドを `~/.local/bin` に配備(PATH に無い場合は追記手順を案内)
+- ユーザレベルスキルとして登録(`~/.claude/skills/ccskill-gptimage`)— **全ての** Claude Code プロジェクトから使えるようになり、プロジェクト毎の設定は不要です
+- backend(Codex CLI / API キー)の利用可否を診断表示
 
-```bash
-export CCSKILL_GPTIMAGE_DIR="/path/to/ccskill-gptimage"
-```
+再実行しても安全です(冪等)。
 
 ## 使い方
-最初に本スキルを使いたいプロジェクト配下の `.claude/skills` にシンボリックリンクを指定してください。
 
-```bash
-# プロジェクト配下で .claude/skills ディレクトリがなければ作成します 
-cd /path/to/your-project/
-mkdir -p .claude/skills
-
-# スキルとして認識されるようシンボリックリンクを貼ります
-ln -s $CCSKILL_GPTIMAGE_DIR/.claude/skills/ccskill-gptimage .claude/skills/ccskill-gptimage
-```
-
-Claude Code で ChatGPT Images 2.0 を使って画像生成するよう指示をするか、明示的に `/ccskill-gptimage` をプロンプトに入力して下さい。
+任意の Claude Code プロジェクトで、ChatGPT Images 2.0 を使って画像生成するよう指示をするか、明示的に `/ccskill-gptimage` をプロンプトに入力して下さい。
 
 詳細なプロンプトを自分で書かなくても、Claude Code が会話文脈やプロジェクト内の情報から最適なプロンプトを組み立て、適切なオプションを選んで画像生成します。
 
 
 ## 更新
-以下の通り本スキルを clone した箇所で `git pull` してください
+以下の通り本スキルを clone した箇所で `git pull` してください。スキル登録もコマンドも clone 先への symlink なので、自動的に更新が反映されます。
 
 ```bash
-cd $CCSKILL_GPTIMAGE_DIR
+cd /path/to/ccskill-gptimage
 git pull
 ```
 
-## コマンドラインから単体で使う場合
-
-画像生成コマンドとして使用することもできます。
+## アンインストール
 
 ```bash
-cd $CCSKILL_GPTIMAGE_DIR
-source venv/bin/activate
-python generate_image.py "夕焼けの海岸線"
+ccskill-gptimage uninstall
+```
+
+symlink(`~/.local/bin/ccskill-gptimage` と `~/.claude/skills/ccskill-gptimage`)を除去します。clone したリポジトリ自体は残ります。
+
+## コマンドラインから単体で使う場合
+
+任意のディレクトリから画像生成コマンドとして使用することもできます。
+
+```bash
+ccskill-gptimage generate "夕焼けの海岸線"
 ```
 
 ### 指定可能なオプション
@@ -157,19 +153,19 @@ python generate_image.py "夕焼けの海岸線"
 
 ```bash
 # 基本
-python generate_image.py "A minimalist fox logo, flat vector, navy and gold"
+ccskill-gptimage generate "A minimalist fox logo, flat vector, navy and gold"
 
 # 日本語ポスター
-python generate_image.py 'A minimalist editorial poster with the exact title "腹落ちDMARC" in large serif Japanese font, dark navy background' --size 1024x1536 --quality high
+ccskill-gptimage generate 'A minimalist editorial poster with the exact title "腹落ちDMARC" in large serif Japanese font, dark navy background' --size 1024x1536 --quality high
 
 # 参照画像をベースに編集(背景置換)
-python generate_image.py "Place the same fox logo on a deep navy background with subtle gold sparkles. Preserve the fox's pose and proportions from the reference." --reference ./logo.png --quality medium
+ccskill-gptimage generate "Place the same fox logo on a deep navy background with subtle gold sparkles. Preserve the fox's pose and proportions from the reference." --reference ./logo.png --quality medium
 
 # 複数参照を合成
-python generate_image.py "Photorealistic gift basket on white" --reference ./a.png --reference ./b.png --reference ./c.png
+ccskill-gptimage generate "Photorealistic gift basket on white" --reference ./a.png --reference ./b.png --reference ./c.png
 
 # マスク誘導編集(--backend api 必須)
-python generate_image.py "A sunlit indoor lounge with a pool" --reference ./lounge.png --mask ./mask.png --backend api
+ccskill-gptimage generate "A sunlit indoor lounge with a pool" --reference ./lounge.png --mask ./mask.png --backend api
 ```
 
 ### 出力ファイル

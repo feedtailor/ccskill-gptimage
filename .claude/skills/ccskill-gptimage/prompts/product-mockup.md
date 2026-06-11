@@ -43,7 +43,7 @@ Do not restyle the product; only remove background and lightly polish.
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Extract the product from the input image and place it on a plain white opaque background. ..." \
   --reference ./product_raw.jpg \
   --background opaque --quality high
@@ -55,7 +55,7 @@ gpt-image-2 does not support transparent. If you want the product as a transpare
 
 1. **Extract on a white background → remove background with rembg** (recommended — leverages gpt-image-2's edge quality):
    ```bash
-   $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+   ccskill-gptimage generate \
      "Extract the product..." --reference ./product_raw.jpg \
      --output-name product_white_bg
    rembg i generated_images/product_white_bg.png generated_images/product_alpha.png
@@ -78,7 +78,7 @@ Photorealistic contact shadows and fabric texture.
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "In this room photo, replace ONLY the white chairs with chairs made of warm oak wood with natural grain. Preserve camera angle, room lighting, floor shadows, and surrounding objects. Keep all other aspects of the image unchanged. Photorealistic contact shadows and wood texture." \
   --reference ./living_room.jpg \
   --size 1536x1024 --quality high

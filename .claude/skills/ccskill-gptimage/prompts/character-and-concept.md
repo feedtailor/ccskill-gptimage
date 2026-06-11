@@ -92,7 +92,7 @@ Include ONLY this packaging text (verbatim):
 
 **CLI example** (with variables substituted):
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Create a collectible action figure of a retro Japanese shiba inu mascot with a red scarf, in blister packaging. Concept: ..." \
   --size 1024x1536 --quality high \
   --output-name shiba_figure_mock
@@ -132,7 +132,7 @@ Constraints:
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Create a children's book illustration introducing a main character. Character: ..." \
   --size 1024x1536 --quality high \
   --output-name forest_hero_anchor
@@ -168,7 +168,7 @@ Constraints:
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Continue the children's book story using the same character. Scene: ..." \
   --reference ./generated_images/forest_hero_anchor.png \
   --size 1024x1536 --quality high \

@@ -30,7 +30,7 @@ Use the same style from the input image and generate a man riding a motorcycle o
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Use the same style from the input image and generate a man riding a motorcycle on a white background." \
   --reference ./style_reference.png --quality high
 ```
@@ -53,7 +53,7 @@ Preserve the exact style properties listed above. Do not shift to photorealism.
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Use the same visual style as the input image — specifically: ..." \
   --reference ./watercolor_ref.png --quality high
 ```

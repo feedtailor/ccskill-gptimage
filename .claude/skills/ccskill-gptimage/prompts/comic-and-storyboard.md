@@ -36,7 +36,7 @@ Panel 4: The door opens. The pet is seated perfectly by the entrance, alert and 
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Create a short vertical comic-style reel with 4 equal-sized panels. Panel 1: ..." \
   --size 1024x1536 --quality high \
   --output-name petstory_reel

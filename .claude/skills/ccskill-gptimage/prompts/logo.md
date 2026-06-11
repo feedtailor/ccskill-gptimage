@@ -42,7 +42,7 @@ Plain background. Deliver a single centered logo with generous padding. No water
 
 ```bash
 for i in 1 2 3 4; do
-  $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+  ccskill-gptimage generate \
     "Create an original, non-infringing logo for a company called Field & Flour, a local bakery. The logo should feel warm, simple, and timeless. Use clean, vector-like shapes, a strong silhouette, and balanced negative space. Favor simplicity over detail so it reads clearly at small and large sizes. Flat design, minimal strokes, no gradients unless essential. Plain background. Deliver a single centered logo with generous padding. No watermark." \
     --size 1024x1024 --quality high \
     --output-name "logo_fieldflour_v${i}"
@@ -59,14 +59,14 @@ gpt-image-2 **does not accept `background: transparent`** (400 error). If a logo
 
 1. **rembg post-processing (recommended)** — generate a plain-background logo with gpt-image-2, then remove the background:
    ```bash
-   $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+   ccskill-gptimage generate \
      "...logo prompt... plain white background..." --output-name logo_raw
    rembg i generated_images/logo_raw.png generated_images/logo_alpha.png
    ```
 
 2. **Switch to `gpt-image-1.5`** (the older model that supports transparency):
    ```bash
-   $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+   ccskill-gptimage generate \
      "minimalist fox logo, flat vector, navy and gold" \
      --model gpt-image-1.5 --background transparent --output-format png
    ```

@@ -42,7 +42,7 @@ No extra text, no watermarks, no unrelated logos.
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Give me a cool in culture ad / fashion shot for a brand called Thread. ..." \
   --size 1024x1536 --quality high \
   --output-name thread_campaign_01
@@ -65,7 +65,7 @@ No watermarks, no logos.
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Create a realistic billboard mockup of the shampoo on a highway scene during sunset. Billboard text (EXACT, verbatim, no extra characters): \"Fresh and clean\" Typography: bold sans-serif, high contrast, centered, clean kerning. Ensure text appears once and is perfectly legible. No watermarks, no logos." \
   --reference ./product_bottle.png --quality high
 ```

@@ -32,7 +32,7 @@ Translate the text in the infographic to Spanish. Do not change any other aspect
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Translate the text in the infographic to Spanish. Do not change any other aspect of the image." \
   --reference ./infographic_en.png --quality high
 ```
@@ -49,7 +49,7 @@ Translate all the English text in the image to natural Japanese. Keep the typogr
 
 **CLI example**:
 ```bash
-$CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
+ccskill-gptimage generate \
   "Translate all the English text in the image to natural Japanese. Keep the typography style ..." \
   --reference ./pitch_deck_en.png --quality high
 ```
