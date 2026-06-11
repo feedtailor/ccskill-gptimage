@@ -72,7 +72,7 @@ Source: [GPT Image Generation Models Prompting Guide](https://developers.openai.
 
 1. **Structure + Goal** — order as `background/scene → subject → key details → constraints`. Include the intended use (ad, UI mock, infographic) to set mode and polish.
 2. **Prompt Format** — paragraph / JSON / tag / bullets all work. Pick what's easiest to maintain.
-3. **Specificity + Quality Cues** — be concrete about materials, shapes, textures, medium. For photorealism, put `photorealistic` directly in the prompt.
+3. **Specificity + Quality Cues** — be concrete about materials, shapes, textures, medium. For photorealism, put `photorealistic` directly in the prompt. Specify **physical scale / aspect ratio numerically** (`about 8–9 inches tall`, `A4 size`, `portrait 3:1`, `smartphone-sized`) — concrete dimensions stabilize proportions far better than vague `tall`/`small` (verified in macaroni-package composite dogfooding).
 4. **Latency vs Fidelity** — start with `quality='low'` while iterating. For small text, infographics, close-up portraits, compare `medium`/`high` before shipping.
 5. **Composition** — specify framing (close-up, wide, top-down), angle (eye-level, low-angle), lighting (soft diffuse, golden hour), and placement (`logo top-right`, `subject centered`).
 6. **People, Pose, and Action** — describe scale, body framing, gaze, object interactions (e.g. `full body visible, feet included`, `looking down at the book, not at the camera`).
@@ -98,6 +98,7 @@ When the user's intent matches a row below, **read the linked file under `prompt
 | Comic strip / storyboard | [`prompts/comic-and-storyboard.md`](prompts/comic-and-storyboard.md) | `1024x1536`, `high` |
 | Mobile / Web UI mockup | [`prompts/ui-mockups.md`](prompts/ui-mockups.md) | portrait for mobile, landscape for web, `high` |
 | Character consistency / concept art / keepsake | [`prompts/character-and-concept.md`](prompts/character-and-concept.md) | `1024x1536`, `medium`–`high` |
+| Cultural atmosphere (Japanese signage, streetscapes) | [`prompts/cultural-atmosphere.md`](prompts/cultural-atmosphere.md) | `1024x1536` or `1536x1024`, `high` |
 
 ### Editing (text + image → image)
 

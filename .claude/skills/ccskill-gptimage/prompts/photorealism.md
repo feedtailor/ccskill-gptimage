@@ -76,6 +76,19 @@ Cookbook Section 2 "People, Pose, and Action" 原文:
 
 ---
 
+## Empty / null state declaration(空状態の肯定形宣言)
+
+gpt-image-2 は「空っぽ」を放置すると**勝手に中身を補完する**傾向がある(モデルが「マグ=飲み物」「部屋=人」を補う)。実証(2026-04-24 dogfooding): 空の Thermos マグを描かせたら茶色の液体が勝手に入った。`mug is empty, no liquid visible inside` と明示したら正しく空になった。
+
+**コツ — null 状態は否定形でなく肯定形で書く**:
+
+- ❌ `do not show people in the room`(否定形は効きが弱い)
+- ✅ `the room is empty, no people present, only furniture visible`(肯定形で「空である状態」を宣言)
+
+応用例: `empty plate`, `empty glass`, `blank canvas`, `unoccupied bench` なども「何が無いか」ではなく「空という状態である」と書く。文化圏雰囲気を出すシーンで「無人の街角」を描く場合も同様([`cultural-atmosphere.md`](cultural-atmosphere.md) 参照)。
+
+---
+
 ## gpt-image-2 固有の注意
 
 - フォトリアルで顔・肌の近接描写があるなら `quality=high` 推奨(`medium` だと肌の質感がやや CG っぽくなることがある)

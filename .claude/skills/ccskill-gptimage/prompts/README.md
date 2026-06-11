@@ -21,6 +21,7 @@
 | [comic-and-storyboard.md](comic-and-storyboard.md) | コミック / パネル構成 / ストーリーボード | 4.7 |
 | [ui-mockups.md](ui-mockups.md) | モバイル/Web アプリ UI モックアップ | 4.8 |
 | [character-and-concept.md](character-and-concept.md) | キャラクター一貫性 / ホリデーカード / 玩具パッケージ | 6.2, 6.3, 6.4 |
+| [cultural-atmosphere.md](cultural-atmosphere.md) | 文化圏の雰囲気(日本語看板・街並み) | Sec.2 + 実証(#015) |
 
 ### 編集(text + image → image)
 

@@ -71,7 +71,7 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 
 1. **Structure + Goal** — `背景/シーン → 被写体 → 細部 → Constraints` の順序で書く。用途(広告 / UI / インフォ)を明示してモードと仕上げレベルを伝える
 2. **Prompt Format** — 段落 / JSON / tag / 箇条書き、どれでも良い。維持しやすいものを選ぶ
-3. **Specificity + Quality Cues** — 素材・形状・テクスチャ・媒体を具体化。フォトリアルには `photorealistic` をプロンプトに直接入れる
+3. **Specificity + Quality Cues** — 素材・形状・テクスチャ・媒体を具体化。フォトリアルには `photorealistic` をプロンプトに直接入れる。**物理スケール / アスペクト比は数値で明示**(`about 8–9 inches tall`、`A4 size`、`portrait 3:1`、`smartphone-sized`)— 曖昧な `tall`/`small` より具体寸法のほうが比率が圧倒的に安定する(マカロニ・パッケージ合成の dogfooding で実証)
 4. **Latency vs Fidelity** — 試行は `quality='low'`、小さいテキスト / インフォ / 近接ポートレートは `medium`〜`high` を事前比較
 5. **Composition** — 構図(close-up / wide / top-down)、アングル(eye-level / low-angle)、光(soft diffuse / golden hour)、配置(`logo top-right` 等)を指定
 6. **People, Pose, and Action** — スケール、フレーミング、視線、物との相互作用を記述(例: `full body visible, feet included`、`looking down at the book, not at the camera`)
@@ -97,6 +97,7 @@ $CCSKILL_GPTIMAGE_DIR/venv/bin/python $CCSKILL_GPTIMAGE_DIR/generate_image.py \
 | コミック / ストーリーボード | [`prompts/comic-and-storyboard.md`](prompts/comic-and-storyboard.md) | `1024x1536`, `high` |
 | モバイル / Web の UI モックアップ | [`prompts/ui-mockups.md`](prompts/ui-mockups.md) | モバイルは縦長、Web は横長、`high` |
 | キャラ一貫性 / コンセプトアート / グリーティングカード | [`prompts/character-and-concept.md`](prompts/character-and-concept.md) | `1024x1536`, `medium`–`high` |
+| 文化圏の雰囲気(日本語看板・街並み) | [`prompts/cultural-atmosphere.md`](prompts/cultural-atmosphere.md) | `1024x1536` or `1536x1024`, `high` |
 
 ### 編集(text + image → image)
 
