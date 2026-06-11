@@ -1,0 +1,121 @@
+#!/bin/bash
+#
+# ccskill-gptimage - Image Generation Skill for Claude Code
+#
+# Usage: ccskill-gptimage <command> [args...]
+#
+# 自己位置解決ディスパッチャ。~/.local/bin からの symlink で呼ばれても
+# readlink で実体位置を辿り、CCSKILL_GPTIMAGE_DIR を解決する。
+#
+
+set -e
+
+# Resolve CCSKILL_GPTIMAGE_DIR from this script's location (follow symlinks)
+SCRIPT_PATH="$0"
+while [ -L "$SCRIPT_PATH" ]; do
+    LINK_TARGET=$(readlink "$SCRIPT_PATH")
+    case "$LINK_TARGET" in
+        /*) SCRIPT_PATH="$LINK_TARGET" ;;
+        *)  SCRIPT_PATH="$(dirname "$SCRIPT_PATH")/$LINK_TARGET" ;;
+    esac
+done
+CCSKILL_GPTIMAGE_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+export CCSKILL_GPTIMAGE_DIR
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+if [ -f "$CCSKILL_GPTIMAGE_DIR/VERSION" ]; then
+    VERSION=$(cat "$CCSKILL_GPTIMAGE_DIR/VERSION")
+else
+    VERSION=$(cd "$CCSKILL_GPTIMAGE_DIR" && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+fi
+
+show_help() {
+    cat << EOF
+ccskill-gptimage - Image Generation Skill for Claude Code (gpt-image-2)
+
+Usage: ccskill-gptimage <command> [args...]
+
+Commands:
+  generate <prompt> [options...]   Generate / edit an image (generate_image.py)
+  uninstall                        Remove symlinks (~/.local/bin, ~/.claude/skills)
+  version                          Show version
+  help                             Show this help
+
+Examples:
+  ccskill-gptimage generate "a minimalist fox logo, flat vector"
+  ccskill-gptimage generate "make the sky golden hour" --reference photo.png
+  ccskill-gptimage generate --help
+
+Version: $VERSION
+Master:  $CCSKILL_GPTIMAGE_DIR
+EOF
+}
+
+cmd_generate() {
+    PYTHON="$CCSKILL_GPTIMAGE_DIR/venv/bin/python"
+    if [ ! -x "$PYTHON" ]; then
+        echo -e "${RED}Error: venv not found: $CCSKILL_GPTIMAGE_DIR/venv${NC}" >&2
+        echo "" >&2
+        echo "Run the installer first:" >&2
+        echo "  cd $CCSKILL_GPTIMAGE_DIR && ./install.sh" >&2
+        exit 1
+    fi
+    exec "$PYTHON" "$CCSKILL_GPTIMAGE_DIR/generate_image.py" "$@"
+}
+
+cmd_uninstall() {
+    BIN_LINK="$HOME/.local/bin/ccskill-gptimage"
+    SKILL_LINK="$HOME/.claude/skills/ccskill-gptimage"
+
+    if [ -L "$BIN_LINK" ]; then
+        /bin/rm -f "$BIN_LINK"
+        echo -e "${GREEN}✓ Removed: $BIN_LINK${NC}"
+    else
+        echo "Not installed (no symlink): $BIN_LINK"
+    fi
+
+    if [ -L "$SKILL_LINK" ]; then
+        /bin/rm -f "$SKILL_LINK"
+        echo -e "${GREEN}✓ Removed: $SKILL_LINK${NC}"
+    else
+        echo "Not installed (no symlink): $SKILL_LINK"
+    fi
+
+    echo ""
+    echo "The repository and venv are kept intact: $CCSKILL_GPTIMAGE_DIR"
+    echo "To reinstall: cd $CCSKILL_GPTIMAGE_DIR && ./install.sh"
+}
+
+if [ $# -eq 0 ]; then
+    show_help
+    exit 0
+fi
+
+COMMAND="$1"
+shift
+
+case "$COMMAND" in
+    generate)
+        cmd_generate "$@"
+        ;;
+    uninstall)
+        cmd_uninstall "$@"
+        ;;
+    help|--help|-h)
+        show_help
+        exit 0
+        ;;
+    version|--version|-v)
+        echo "ccskill-gptimage $VERSION"
+        exit 0
+        ;;
+    *)
+        echo -e "${RED}Error: Unknown command '$COMMAND'${NC}" >&2
+        echo "" >&2
+        show_help >&2
+        exit 1
+        ;;
+esac
