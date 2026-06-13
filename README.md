@@ -11,7 +11,7 @@ You don't need to write prompts explicitly: the skill composes an optimal prompt
 - **No API key needed** — works in association with your ChatGPT subscription (an API key is required for 4K / strict exact-size generation)
 - **Multilingual text rendering** — strong at non-Latin scripts like Japanese (kanji/kana/vertical), Korean, and Chinese
 - **Reference-image editing** — composite and partially edit existing images via `--reference`
-- **Auto metadata sidecar** — prompt, `revised_prompt`, and parameters saved as JSON
+- **Auto metadata sidecar** — the prompt and parameters used for each generation, saved as JSON
 
 ## Examples
 
@@ -100,13 +100,22 @@ The installer takes care of everything:
 - Registers the skill at the user level (`~/.claude/skills/ccskill-gptimage`), so it's available in **every** Claude Code project — no per-project setup needed
 - Diagnoses which backends (Codex CLI / API key) are currently available
 
-Re-running it is safe (idempotent).
-
 ## Usage
 
-In any Claude Code project, just ask it to generate images with ChatGPT Images 2.0, or invoke the skill explicitly by typing `/ccskill-gptimage` in your prompt.
+In any Claude Code project, just ask it to generate images with ChatGPT Images 2.0, or type `/ccskill-gptimage` in your prompt. Describe what you want **in any language** — Claude Code builds the optimal prompt from context and auto-selects size, quality, and backend for the task.
 
-You don't need to write a detailed prompt yourself — Claude Code composes the optimal prompt from the conversation context and project information, and picks appropriate options for the task.
+- Generate from project context
+  ```
+  Look at the LP HTML @lp.html and generate 3 hero-image options that fit its content
+  ```
+- Across multiple slides at once
+  ```
+  Generate images for slides 3, 10, and 13 of the PowerPoint, each matching that page's content
+  ```
+- Edit an existing image (reference a file with `@`)
+  ```
+  Based on the product photo @product.jpg, make versions with the weather/time changed to "overcast" and "dusk"
+  ```
 
 
 ## Updating
