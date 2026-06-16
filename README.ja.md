@@ -157,6 +157,8 @@ ccskill-gptimage generate "夕焼けの海岸線"
 | `--moderation` | モデレーション (`auto`/`low`) | `auto` |
 | `--backend` | 画像生成 backend (`auto`/`codex`/`api`)。`auto` は Codex 優先、失敗時 API フォールバック | `auto` |
 
+各オプションの詳細は、[オプションガイド](docs/options.ja.md) を参照。
+
 ### 使用例
 
 ```bash

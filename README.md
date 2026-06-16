@@ -157,6 +157,8 @@ ccskill-gptimage generate "a coastal sunset"
 | `--moderation` | Moderation (`auto`/`low`) | `auto` |
 | `--backend` | Generation backend (`auto`/`codex`/`api`). `auto` prefers Codex, falls back to API on failure | `auto` |
 
+For details on each option, see the [Options Guide](docs/options.md).
+
 ### Examples
 
 ```bash
