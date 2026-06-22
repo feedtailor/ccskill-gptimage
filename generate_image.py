@@ -65,6 +65,7 @@ BACKEND_CHOICES = ["auto", "codex", "api"]
 CODEX_HOME = Path.home() / ".codex"
 CODEX_AUTH_FILE = CODEX_HOME / "auth.json"
 CODEX_GENERATED_DIR = CODEX_HOME / "generated_images"
+CODEX_SESSIONS_DIR = CODEX_HOME / "sessions"
 CODEX_SUBPROCESS_TIMEOUT = 300
 
 
@@ -265,11 +266,12 @@ def _resolve_backend(requested: str) -> str:
 
 
 def _find_latest_codex_image(since_mtime: float) -> Path | None:
-    """`since_mtime` より後に生成された最新の `ig_*.png` を返す。
+    """`since_mtime` より後に生成された最新の `ig_*.png` を返す(旧 Codex 経路)。
 
-    Codex CLI は出力先指定を受け付けないため、画像は常に
-    `~/.codex/generated_images/<session-id>/ig_*.png` に出力される。
-    呼び出し側が指定パスへ移すために、最新ファイルを特定する必要がある。
+    ~2026-04 頃の Codex CLI は出力先指定を受け付けず、画像を
+    `~/.codex/generated_images/<session-id>/ig_*.png` にファイル出力していた。
+    新しい Codex (codex exec) はファイル化せずセッションログに inline base64 で返すため、
+    こちらが None のときは `_recover_codex_image_from_session()` をフォールバックに使う。
     """
     if not CODEX_GENERATED_DIR.exists():
         return None
@@ -284,6 +286,82 @@ def _find_latest_codex_image(since_mtime: float) -> Path | None:
             latest_mtime = m
             latest_path = p
     return latest_path
+
+
+def _extract_codex_session_id(stdout: str) -> str | None:
+    """codex exec のヘッダ出力 (`session id: <uuid>`) から session id を抽出する。"""
+    if not stdout:
+        return None
+    m = re.search(r"session id:\s*([0-9a-fA-F][0-9a-fA-F-]{7,})", stdout)
+    return m.group(1) if m else None
+
+
+def _find_codex_session_log(session_id: str | None, since_mtime: float) -> Path | None:
+    """この実行に対応する Codex セッションログ (`rollout-*.jsonl`) を特定する。
+
+    session_id が分かればそれを含むファイル名を優先。分からなければ since_mtime より後に
+    更新された最新の jsonl を採用する(本番では codex exec 実行中にログが書かれるため成立)。
+    """
+    if not CODEX_SESSIONS_DIR.exists():
+        return None
+    if session_id:
+        matches = list(CODEX_SESSIONS_DIR.rglob(f"*{session_id}*.jsonl"))
+        if matches:
+            return max(matches, key=lambda p: p.stat().st_mtime)
+    latest_mtime = since_mtime
+    latest_path: Path | None = None
+    for p in CODEX_SESSIONS_DIR.rglob("*.jsonl"):
+        try:
+            m = p.stat().st_mtime
+        except OSError:
+            continue
+        if m > latest_mtime:
+            latest_mtime = m
+            latest_path = p
+    return latest_path
+
+
+def _recover_codex_image_from_session(log_path: Path) -> bytes | None:
+    """Codex セッションログから生成画像 (`image_generation_call.result` の base64) を回収する。
+
+    新しい Codex (>= 2026-06 頃) は `codex exec` で画像をファイル化せず、セッションログ内に
+    inline base64 で返す。`status == "completed"` を優先し、無ければ最後に出現した result を
+    採用する(partial_images 対策)。`data:` URI 形式にも一応対応する。
+    """
+    try:
+        text = log_path.read_text()
+    except OSError:
+        return None
+    last_b64: str | None = None
+    completed_b64: str | None = None
+    for line in text.splitlines():
+        if "image_generation_call" not in line:
+            continue
+        try:
+            obj = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(obj, dict):
+            continue
+        payload = obj.get("payload")
+        if not isinstance(payload, dict):
+            payload = obj
+        if payload.get("type") != "image_generation_call":
+            continue
+        result = payload.get("result")
+        if isinstance(result, str) and result:
+            last_b64 = result
+            if payload.get("status") == "completed":
+                completed_b64 = result
+    b64 = completed_b64 or last_b64
+    if not b64:
+        return None
+    if b64.lstrip().startswith("data:") and "," in b64:
+        b64 = b64.split(",", 1)[1]
+    try:
+        return base64.b64decode(b64)
+    except (ValueError, TypeError):
+        return None
 
 
 def _build_codex_prompt(
@@ -376,15 +454,28 @@ def _generate_via_codex(
         print(f"[Error] Codex CLI exit code {proc.returncode}: {proc.stderr.strip()[:200]}")
         return None
 
-    image = _find_latest_codex_image(started_at)
-    if image is None:
-        print("[Error] Codex 経由で生成された画像が見つかりませんでした")
-        return None
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(image, output_path)
     revised = _extract_revised_prompt_from_codex_log(proc.stdout)
-    return (output_path, revised)
+
+    # 旧 Codex: 画像は ~/.codex/generated_images/<session>/ig_*.png にファイル出力される
+    image = _find_latest_codex_image(started_at)
+    if image is not None:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(image, output_path)
+        return (output_path, revised)
+
+    # 新 Codex (>= 2026-06 頃): codex exec は画像をファイル化せず、セッションログ内に
+    # inline base64 で返す。ログから回収してデコード保存する。
+    session_id = _extract_codex_session_id(proc.stdout)
+    log_path = _find_codex_session_log(session_id, started_at)
+    if log_path is not None:
+        data = _recover_codex_image_from_session(log_path)
+        if data:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_bytes(data)
+            return (output_path, revised)
+
+    print("[Error] Codex 経由で生成された画像が見つかりませんでした")
+    return None
 
 
 def _extract_revised_prompt_from_codex_log(stdout: str) -> str | None:

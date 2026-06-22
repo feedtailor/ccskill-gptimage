@@ -706,6 +706,10 @@ class TestGenerateViaCodex:
         self, mock_run, monkeypatch, tmp_path
     ):
         monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: None)
+        # セッションログ回収フォールバックも空にする(実環境の ~/.codex/sessions を拾わない)
+        monkeypatch.setattr(
+            "generate_image.CODEX_SESSIONS_DIR", tmp_path / "no_sessions"
+        )
         mock_run.return_value = Mock(returncode=0, stdout="", stderr="")
         result = generate_image(
             prompt="x", backend="codex", output_dir=str(tmp_path / "out")
@@ -721,6 +725,122 @@ class TestGenerateViaCodex:
             prompt="x", backend="codex", output_dir=str(tmp_path / "out")
         )
         assert result is None
+
+
+class TestCodexSessionLogRecovery:
+    """新しい Codex (codex exec が画像をファイル化せず、セッションログに inline base64 で返す)
+    への対応。ファイルが見つからないとき、ログから b64 を回収してデコード保存できること。"""
+
+    def test_extract_codex_session_id(self):
+        from generate_image import _extract_codex_session_id
+
+        sid = "019eeffd-ca63-7d00-b64e-2dacdd420385"
+        header = f"model: gpt-5.5\nsession id: {sid}\n--------"
+        assert _extract_codex_session_id(header) == sid
+        assert _extract_codex_session_id("no id here") is None
+        assert _extract_codex_session_id("") is None
+
+    def _write_session_log(self, sessions_root: Path, sid: str, *entries: dict) -> Path:
+        d = sessions_root / "2026" / "06" / "23"
+        d.mkdir(parents=True, exist_ok=True)
+        log = d / f"rollout-2026-06-23T00-40-47-{sid}.jsonl"
+        log.write_text(
+            "\n".join(json.dumps(e) for e in entries) + "\n", encoding="utf-8"
+        )
+        return log
+
+    @patch("generate_image.subprocess.run")
+    def test_recovers_image_from_session_log_when_no_file(
+        self, mock_run, monkeypatch, tmp_path
+    ):
+        sid = "019eeffd-ca63-7d00-b64e-2dacdd420385"
+        sessions = tmp_path / "sessions"
+        self._write_session_log(
+            sessions,
+            sid,
+            {
+                "type": "response_item",
+                "payload": {
+                    "type": "image_generation_call",
+                    "result": DUMMY_PNG_B64,
+                    "status": "generating",
+                },
+            },
+        )
+        monkeypatch.setattr("generate_image.CODEX_SESSIONS_DIR", sessions)
+        # 旧来のファイル出力経路は見つからない
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: None)
+        mock_run.return_value = Mock(
+            returncode=0, stdout=f"session id: {sid}\n", stderr=""
+        )
+
+        out_dir = tmp_path / "out"
+        result = generate_image(
+            prompt="a red circle",
+            backend="codex",
+            output_dir=str(out_dir),
+            output_name="hero",
+        )
+        assert result is not None
+        out = out_dir / "hero.png"
+        assert out.exists()
+        assert out.read_bytes() == base64.b64decode(DUMMY_PNG_B64)
+
+    @patch("generate_image.subprocess.run")
+    def test_prefers_completed_result_over_partial(
+        self, mock_run, monkeypatch, tmp_path
+    ):
+        sid = "0190000d-ca63-7d00-b64e-2dacdd420999"
+        partial_b64 = base64.b64encode(b"PARTIAL-not-final").decode()
+        sessions = tmp_path / "sessions"
+        self._write_session_log(
+            sessions,
+            sid,
+            {"payload": {"type": "image_generation_call", "result": partial_b64,
+                         "status": "generating"}},
+            {"payload": {"type": "image_generation_call", "result": DUMMY_PNG_B64,
+                         "status": "completed"}},
+        )
+        monkeypatch.setattr("generate_image.CODEX_SESSIONS_DIR", sessions)
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: None)
+        mock_run.return_value = Mock(
+            returncode=0, stdout=f"session id: {sid}\n", stderr=""
+        )
+        out_dir = tmp_path / "out"
+        result = generate_image(
+            prompt="x", backend="codex", output_dir=str(out_dir), output_name="z"
+        )
+        assert result is not None
+        assert (out_dir / "z.png").read_bytes() == base64.b64decode(DUMMY_PNG_B64)
+
+    @patch("generate_image.subprocess.run")
+    def test_file_output_path_takes_precedence_over_log(
+        self, mock_run, monkeypatch, tmp_path
+    ):
+        """旧 Codex のファイル出力が見つかる場合はそちらを優先(後方互換)。"""
+        sid = "0190000d-ca63-7d00-b64e-2dacddffffff"
+        fake = tmp_path / "ig_x.png"
+        fake.write_bytes(base64.b64decode(DUMMY_PNG_B64))
+        monkeypatch.setattr("generate_image._find_latest_codex_image", lambda since: fake)
+        # ログ側には別物を置いておく(使われないはず)
+        sessions = tmp_path / "sessions"
+        self._write_session_log(
+            sessions,
+            sid,
+            {"payload": {"type": "image_generation_call",
+                         "result": base64.b64encode(b"SHOULD-NOT-BE-USED").decode(),
+                         "status": "completed"}},
+        )
+        monkeypatch.setattr("generate_image.CODEX_SESSIONS_DIR", sessions)
+        mock_run.return_value = Mock(
+            returncode=0, stdout=f"session id: {sid}\n", stderr=""
+        )
+        out_dir = tmp_path / "out"
+        result = generate_image(
+            prompt="x", backend="codex", output_dir=str(out_dir), output_name="z"
+        )
+        assert result is not None
+        assert (out_dir / "z.png").read_bytes() == base64.b64decode(DUMMY_PNG_B64)
 
 
 class TestBackendDispatch:
