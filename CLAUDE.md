@@ -132,7 +132,10 @@ ChatGPT サブスク + Codex CLI が利用可能なら、API キー不要で gpt
 ### Codex 経路の実装上の制約(必ず守ること)
 
 1. **CLI 引数順序**: `codex exec ... 'PROMPT' -i ref.png` の順を厳守。`-i` は variadic で後続の positional prompt まで画像として食う罠がある(検証済み 2026-04-25)
-2. **保存パス指定不可**: agent に「特定パスへ保存して」は通らない。出力は常に `~/.codex/generated_images/<session-id>/ig_*.png`。`_find_latest_codex_image()` で mtime 最新を回収して指定パスへコピーする
+2. **保存パス指定不可**: agent に「特定パスへ保存して」は通らない。スクリプトが出力を自動回収して指定パスへコピーする。回収方法は Codex のバージョンで異なり、両対応している(出典: PR #1 / マージコミット `6bb46b2`、issue #023):
+   - 旧 Codex(2026-06-17 まで確認): `~/.codex/generated_images/<session-id>/ig_*.png` にファイル出力。`_find_latest_codex_image()` で mtime 最新を回収
+   - 新 Codex(codex-cli v0.141.0 で確認): ファイルを書かず、セッションログ `~/.codex/sessions/.../rollout-*.jsonl` の `image_generation_call.result` に inline base64 で返す。`_recover_codex_image_from_session()` が `_extract_codex_session_id()` / `_find_codex_session_log()` 経由で base64 を回収する
+   - ファイル出力があればそちらを優先し、無ければログ回収にフォールバックするため、新旧どちらの Codex でも動作する
 3. **`image_gen` 直接使用を必ず明記**: プロンプトに「API キーやスクリプトを書かず、組み込みの image_gen ツールを直接使ってください」を入れないと、Codex は curl/Python で API 直叩きルート(従量課金化)を取る
 4. **`size` / `quality` 厳密制御不可**: プロンプトで指示は通るが agent 経由のため非決定的(検証で 1024×1536 指定が 1254×1254 になる事例あり)。ピクセル単位の精度が必須なら `--backend api`
 5. **`--mask` 非対応**: Codex 経由では mask 受け渡し API 露出なし。auto なら API へフォールバック、`--backend codex` 明示時はエラー
