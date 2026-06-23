@@ -263,3 +263,4 @@ Each image is saved alongside a **metadata JSON sidecar** (`{name}.{ext}.json`) 
 - **Japanese text broken** → wrap in quotes; specify font (`serif Japanese font`); use `quality=high`
 - **400 on `--input-fidelity`** → omit it (gpt-image-2 auto max fidelity); only valid for `--model gpt-image-1.5`
 - **400 on `--background transparent`** → see [transparent section](#no-transparent-background)
+- **"Image not found" with Codex backend** → newer Codex CLI (v0.141.0+) returns the image in the session log instead of writing a file, so older versions of this skill fail to recover it. Run `git pull` in the repo to update.
